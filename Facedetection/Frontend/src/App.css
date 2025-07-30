@@ -1,0 +1,44 @@
+.App {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f4f4f8;
+}
+
+h1 {
+  color: #333;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.video-container {
+  width: 640px;
+  max-width: 100%;
+}
+
+.info-box {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  width: 300px;
+  text-align: left;
+}
+
+.info-box h2 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.info-box p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #555;
+}
