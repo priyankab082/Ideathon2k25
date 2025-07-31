@@ -1,44 +1,146 @@
-.App {
-  text-align: center;
-  font-family: Arial, sans-serif;
-  padding: 20px;
-  background-color: #f4f4f8;
-}
-
-h1 {
+.interview-room {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f2f5;
   color: #333;
-}
-
-.container {
+  height: 100vh;
+  margin: 0;
+  padding: 0;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 40px;
-  margin-top: 20px;
-  flex-wrap: wrap;
+  flex-direction: column;
 }
 
-.video-container {
-  width: 640px;
-  max-width: 100%;
+.interview-header {
+  background: #1a73e8;
+  color: white;
+  padding: 15px 20px;
+  text-align: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.info-box {
-  background: white;
-  border-radius: 10px;
+.interview-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.timer {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.interview-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
   padding: 20px;
+  flex: 1;
+}
+
+.panel {
+  background: white;
+  border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  width: 300px;
-  text-align: left;
+  padding: 15px;
+  position: relative;
 }
 
-.info-box h2 {
-  margin-top: 0;
-  color: #2c3e50;
+.interviewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
-.info-box p {
-  margin: 10px 0;
-  font-size: 16px;
+.interviewer img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #1a73e8;
+}
+
+.candidate {
+  display: flex;
+  flex-direction: column;
+}
+
+.video-wrapper {
+  width: 100%;
+  height: 300px;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.pose-overlay {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+}
+
+.candidate-info {
+  margin-top: 10px;
+}
+
+.candidate-info h3 {
+  margin: 5px 0;
+}
+
+.status {
+  font-size: 0.9rem;
+}
+
+.status.online {
+  color: green;
+}
+
+.status.offline {
+  color: red;
+}
+
+.warning {
+  background: #ffebee;
+  color: #c62828;
+  padding: 8px;
+  border-radius: 5px;
+  margin-top: 10px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.interview-footer {
+  padding: 15px 20px;
+  background: #f8f9fa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #ddd;
+}
+
+.end-interview-btn {
+  padding: 10px 20px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.end-interview-btn:hover {
+  background: #b71c1c;
+}
+
+.instructions {
   color: #555;
+  font-size: 0.9rem;
 }

@@ -1,28 +1,70 @@
-import { useState } from 'react'
-import Profile from './components/Profile'
-import { Route, Routes, Navigate } from 'react-router-dom'
-import Login from './components/Login'
-import ProtectedRoute from './components/ProtectedRoute'
-import ErrorBoundary from './components/ErrorBoundary'
-
-
+// App.js
+import { useState } from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
+import Login from './components/Login';
+import Register from './components/Register';
+import Profile from './components/Profile';
+import HomePage from './components/HomePage'; // Make sure this path is correct
+import Dashboard from "./components/Dashboard";
+import InterviewSetup from "./components/InterviewSetup";
 function App() {
-
   return (
-    <>
-      <Routes>
-        <Route path="/" element={
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* Protected Routes */}
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Navigate to="/home" replace />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/home"
+        element={
+          <ProtectedRoute>
+            <ErrorBoundary>
+              <HomePage />
+            </ErrorBoundary>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
           <ProtectedRoute>
             <ErrorBoundary>
               <Profile />
             </ErrorBoundary>
           </ProtectedRoute>
-        } />
-        <Route path="/login" element={<Login />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </>
-  )
+        }
+      />
+      <Route
+        path="/interview-setup"
+        element={
+          <ProtectedRoute>
+            <ErrorBoundary>
+              <InterviewSetup />
+            </ErrorBoundary>
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/dashboard" element={<ProtectedRoute>
+            <ErrorBoundary>
+             <Dashboard />
+            </ErrorBoundary>
+          </ProtectedRoute>} />
+
+      {/* Catch-all Redirect */}
+      <Route path="*" element={<Navigate to="/home" replace />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;

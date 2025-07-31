@@ -1,13 +1,25 @@
+// routes/user.js
 const express = require('express');
 const router = express.Router();
-const User = require('../models/user');
+const User = require('../models/User'); // Extended model below
 const multer = require('multer');
 const path = require('path');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken'); // Optional: for auth later
 
-// Configure multer for file uploads
+// =======================
+// Multer File Upload Setup
+// =======================
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../uploads'));
+    if (file.fieldname === 'resume') {
+      cb(null, path.join(__dirname, '../uploads/resumes'));
+    } else if (file.fieldname === 'profilePhoto') {
+      cb(null, path.join(__dirname, '../uploads/photos'));
+    } else {
+      cb(null, path.join(__dirname, '../uploads'));
+    }
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + '-' + file.originalname);
@@ -16,28 +28,42 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Register a new user
+// =======================
+// Helper: Parse Array Fields from FormData
+// =======================
+const parseArrayField = (field) => {
+  if (!field) return [];
+  try {
+    return Array.isArray(field) ? field : field.split(',').map(item => item.trim()).filter(Boolean);
+  } catch {
+    return [];
+  }
+};
+
+// =======================
+// Register User
+// =======================
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, phone, role } = req.body;
-    
-    // Check if user already exists
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists with this email' });
+      return res.status(400).json({ message: 'User already exists' });
     }
-    
-    // Create new user
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = new User({
       name,
       email,
-      password, // Note: In a real app, you should hash this password
+      password: hashedPassword,
       phone,
       role: role || 'user'
     });
-    
+
     await newUser.save();
-    
+
     res.status(201).json({
       message: 'User registered successfully',
       user: {
@@ -54,23 +80,31 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login user
+// =======================
+// Login User
+// =======================
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    
+
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    if (user.password !== password) {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
-    
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+
+    // In real app: generate JWT
+    // const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET || 'secret', { expiresIn: '7d' });
+
     res.status(200).json({
       message: 'Login successful',
-      user
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role
+      }
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -78,160 +112,207 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Get all users (admin only route in a real app)
+// =======================
+// Get All Users (Admin)
+// =======================
 router.get('/users', async (req, res) => {
   try {
     const users = await User.find().select('-password');
     res.status(200).json(users);
   } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ message: 'Server error while fetching users' });
+    res.status(500).json({ message: 'Error fetching users' });
   }
 });
 
-// Get user by ID
+// =======================
+// Get User by ID
+// =======================
 router.get('/users/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.status(200).json(user);
   } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({ message: 'Server error while fetching user' });
+    res.status(500).json({ message: 'Error fetching user' });
   }
 });
 
-// Update user
+// =======================
+// Update User (Basic Info)
+// =======================
 router.put('/users/:id', async (req, res) => {
   try {
     const { name, email, phone, role } = req.body;
-    
-    // Find and update user
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       { name, email, phone, role },
       { new: true }
     ).select('-password');
-    
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
+
+    if (!updatedUser) return res.status(404).json({ message: 'User not found' });
+
     res.status(200).json({
-      message: 'User updated successfully',
+      message: 'User updated',
       user: updatedUser
     });
   } catch (error) {
-    console.error('Error updating user:', error);
-    res.status(500).json({ message: 'Server error while updating user' });
+    res.status(500).json({ message: 'Error updating user' });
   }
 });
 
-// Delete user
+// =======================
+// Delete User
+// =======================
 router.delete('/users/:id', async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);
-    
-    if (!deletedUser) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    res.status(200).json({ message: 'User deleted successfully' });
+    if (!deletedUser) return res.status(404).json({ message: 'User not found' });
+    res.status(200).json({ message: 'User deleted' });
   } catch (error) {
-    console.error('Error deleting user:', error);
-    res.status(500).json({ message: 'Server error while deleting user' });
+    res.status(500).json({ message: 'Error deleting user' });
   }
 });
 
-// Upload profile photo
+// =======================
+// Upload Profile Photo
+// =======================
 router.post('/upload-profile-photo', upload.single('profilePhoto'), (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
-    }
-    
-    const photoUrl = `/uploads/${req.file.filename}`;
-    res.status(200).json({ photoUrl });
-  } catch (error) {
-    console.error('Error uploading profile photo:', error);
-    res.status(500).json({ message: 'Server error during file upload' });
-  }
+  if (!req.file) return res.status(400).json({ message: 'No photo uploaded' });
+  const photoUrl = `/uploads/photos/${req.file.filename}`;
+  res.status(200).json({ photoUrl });
 });
 
-// Get current user profile
+// =======================
+// Upload Resume
+// =======================
+router.post('/upload-resume', upload.single('resume'), (req, res) => {
+  if (!req.file) return res.status(400).json({ message: 'No resume uploaded' });
+  const resumeUrl = `/uploads/resumes/${req.file.filename}`;
+  res.status(200).json({ resumeUrl });
+});
+
+// =======================
+// GET: Current User Profile
+// =======================
 router.get('/user', async (req, res) => {
   try {
-    // In a real app, you would get the user ID from authentication middleware
-    // For now, we'll return a mock user profile for testing
-    const mockUserProfile = {
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@example.com",
-      phone: "1234567890",
-      location: "New York",
-      yearsOfExperience: "3",
-      resume: "/uploads/sample-resume.pdf",
-      currentRole: "Software Developer",
-      currentCompany: "Tech Corp",
-      targetRole: "Senior Developer",
-      professionalSummary: "Experienced software developer with 3 years of experience in web development.",
-      technicalSkills: ["JavaScript", "React", "Node.js"],
-      degree: "B.Sc Computer Science",
-      major: "Software Engineering",
-      university: "Tech University",
-      graduationYear: "2020",
-      preferredDifficulty: "medium",
-      preferredDuration: "45 minutes",
-      targetCompanies: ["Google", "Microsoft", "Amazon"],
-      profilePhoto: "/uploads/sample-profile.jpg"
-    };
-    
-    res.status(200).json(mockUserProfile);
+    // Simulate user from auth middleware (in real app: req.user from JWT)
+    const email = req.query.email; // or use JWT: req.user.email
+    if (!email) return res.status(400).json({ message: 'Email is required' });
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Return full profile data
+    res.status(200).json({
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      email: user.email,
+      phone: user.phone || '',
+      location: user.location || '',
+      yearsOfExperience: user.yearsOfExperience || '',
+      resume: user.resume || '',
+      currentRole: user.currentRole || '',
+      currentCompany: user.currentCompany || '',
+      targetRole: user.targetRole || '',
+      professionalSummary: user.professionalSummary || '',
+      technicalSkills: user.technicalSkills || [],
+      degree: user.degree || '',
+      major: user.major || '',
+      university: user.university || '',
+      graduationYear: user.graduationYear || '',
+      preferredDifficulty: user.preferredDifficulty || '',
+      preferredDuration: user.preferredDuration || '',
+      targetCompanies: user.targetCompanies?.join(', ') || '',
+      profilePhoto: user.profilePhoto || ''
+    });
   } catch (error) {
-    console.error('Error fetching user profile:', error);
-    res.status(500).json({ message: 'Server error while fetching user profile' });
+    console.error('Fetch profile error:', error);
+    res.status(500).json({ message: 'Server error fetching profile' });
   }
 });
 
-// Update user profile
+// =======================
+// POST: Save Full User Profile
+// =======================
 router.post('/user', upload.single('profilePhoto'), async (req, res) => {
   try {
-    // In a real app, you would get the user ID from authentication middleware
-    // and update the user's profile in the database
-    console.log('Profile update request received:', req.body);
-    
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      location,
+      yearsOfExperience,
+      currentRole,
+      currentCompany,
+      targetRole,
+      professionalSummary,
+      technicalSkills,
+      degree,
+      major,
+      university,
+      graduationYear,
+      preferredDifficulty,
+      preferredDuration,
+      targetCompanies,
+      resume,
+      profilePhotoUrl
+    } = req.body;
+
+    // Find user by email
+    let user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Handle arrays
+    const skills = parseArrayField(technicalSkills);
+    const companies = parseArrayField(targetCompanies);
+
+    // Build profile update object
+    const profileUpdates = {
+      firstName,
+      lastName,
+      phone,
+      location,
+      yearsOfExperience,
+      currentRole,
+      currentCompany,
+      targetRole,
+      professionalSummary,
+      technicalSkills: skills,
+      degree,
+      major,
+      university,
+      graduationYear: parseInt(graduationYear, 10) || undefined,
+      preferredDifficulty,
+      preferredDuration,
+      targetCompanies: companies
+    };
+
+    // Only update resume if passed
+    if (resume) profileUpdates.resume = resume;
+
+    // Handle profile photo
     if (req.file) {
-      console.log('Profile photo uploaded:', req.file.filename);
+      profileUpdates.profilePhoto = `/uploads/photos/${req.file.filename}`;
+    } else if (profilePhotoUrl && !req.file) {
+      profileUpdates.profilePhoto = profilePhotoUrl;
     }
-    
-    res.status(200).json({ 
-      message: 'Profile updated successfully',
-      // Return the data that was sent, simulating a successful update
-      data: {
-        ...req.body,
-        profilePhoto: req.file ? `/uploads/${req.file.filename}` : req.body.profilePhotoUrl
+
+    // Update user
+    Object.assign(user, profileUpdates);
+    await user.save();
+
+    res.status(200).json({
+      message: 'Profile saved successfully',
+      profile: {
+        ...user.toObject(),
+        password: undefined // Don't send password
       }
     });
   } catch (error) {
-    console.error('Error updating user profile:', error);
-    res.status(500).json({ message: 'Server error while updating user profile' });
-  }
-});
-
-// Upload resume
-router.post('/upload-resume', upload.single('resume'), (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: 'No file uploaded' });
-    }
-    
-    const resumeUrl = `/uploads/${req.file.filename}`;
-    res.status(200).json({ resumeUrl });
-  } catch (error) {
-    console.error('Error uploading resume:', error);
-    res.status(500).json({ message: 'Server error during file upload' });
+    console.error('Profile save error:', error);
+    res.status(500).json({ message: 'Failed to save profile' });
   }
 });
 

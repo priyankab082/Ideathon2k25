@@ -138,6 +138,7 @@ def predict():
             "details": str(e)
         }), 500
 
-if __name__ == '__main__':
-    print("🚀 Head Pose API running on http://localhost:5000")
-    app.run(port=5000, debug=False)  # 🔁 Set debug=False to avoid issues
+if __name__ == "__main__":
+    app.run(host="localhost", port=5000)
+    # or use app.run(host="0.0.0.0", port=5000) to accept external connections too
+ # 🔁 Set debug=False to avoid issues
