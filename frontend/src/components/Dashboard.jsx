@@ -70,7 +70,11 @@ const Dashboard = () => {
             </div>
           </div>
           <button className="bg-white text-green-700 border border-green-300 px-6 py-3 rounded-lg hover:bg-green-100 block w-full">
-            Manage Profile
+            <Link
+              to="/profile"
+            >
+              Manage Profile
+            </Link>
           </button>
         </div>
 
