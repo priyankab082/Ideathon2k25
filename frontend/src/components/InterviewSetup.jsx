@@ -1,6 +1,6 @@
 // components/InterviewSetup.js
 import React, { useState, useRef, useEffect } from "react";
-import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaStop, FaPaperPlane } from "react-icons/fa";
+import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaPaperPlane } from "react-icons/fa";
 
 const InterviewSetup = () => {
   const [isMicOn, setIsMicOn] = useState(true);
@@ -16,18 +16,14 @@ const InterviewSetup = () => {
   ]);
   const [inputValue, setInputValue] = useState("");
   const [mediaStream, setMediaStream] = useState(null);
-  const [audioChunks, setAudioChunks] = useState([]);
-  const [isRecording, setIsRecording] = useState(false);
   const [analyser, setAnalyser] = useState(null);
   const [snackbar, setSnackbar] = useState({ show: false, message: "" });
   const [snackbarTimeout, setSnackbarTimeout] = useState(null);
-
   const videoRef = useRef(null);
   const audioContextRef = useRef(null);
   const dataArrayRef = useRef(null);
   const messagesEndRef = useRef(null);
   const mediaStreamRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
 
   // Show snackbar with auto-hide
   const showSnackbar = (msg) => {
@@ -44,7 +40,6 @@ const InterviewSetup = () => {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         setMediaStream(stream);
         mediaStreamRef.current = stream;
-
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           videoRef.current.play().catch(e => console.error("Video play error:", e));
@@ -71,60 +66,18 @@ const InterviewSetup = () => {
         };
         visualize();
 
-        // Setup recording
-        const recorder = new MediaRecorder(stream, { mimeType: "video/webm;codecs=vp9" });
-        mediaRecorderRef.current = recorder;
-
-        recorder.ondataavailable = (e) => {
-          if (e.data.size > 0) {
-            setAudioChunks((prev) => [...prev, e.data]);
-          }
-        };
-
-        recorder.onstop = () => {
-          const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-          console.log("🎙️ Full recorded audio blob:", audioBlob);
-          const formData = new FormData();
-          formData.append("audio", audioBlob, "recording.webm");
-          
-          // Send audio to transcribe-audio endpoint
-          fetch("http://localhost:5000/transcribe-audio", {
-            method: "POST",
-            body: formData,
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              if (data.status === "success") {
-                showSnackbar("✅ Audio transcribed and saved successfully!");
-                console.log("Transcription:", data.transcription);
-                console.log("Saved to:", data.saved_to);
-              } else {
-                showSnackbar("❌ Failed to transcribe audio: " + data.message);
-              }
-            })
-            .catch((err) => {
-              console.error("Transcription error:", err);
-              showSnackbar("❌ Error sending audio for transcription");
-            });
-        };
-
-        // Recording will be started manually
-
-        // Send frame to Flask every 2 seconds
+        // Send video frame to Flask for face detection
         const sendFrameToFlask = () => {
           if (!videoRef.current?.videoWidth || !videoRef.current?.videoHeight) return;
-
           const canvas = document.createElement("canvas");
           const video = videoRef.current;
           canvas.width = video.videoWidth;
           canvas.height = video.videoHeight;
           const ctx = canvas.getContext("2d");
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
           canvas.toBlob(async (blob) => {
             const formData = new FormData();
             formData.append("image", blob, "frame.jpg");
-
             try {
               const res = await fetch("http://localhost:5000/detect-face", {
                 method: "POST",
@@ -136,7 +89,6 @@ const InterviewSetup = () => {
               }
             } catch (err) {
               console.error("Error sending frame to Flask:", err);
-              // Optionally: showSnackbar("⚠️ Server unreachable", "error");
             }
           }, "image/jpeg");
         };
@@ -158,16 +110,12 @@ const InterviewSetup = () => {
           if (audioContextRef.current) {
             audioContextRef.current.close();
           }
-          if (mediaRecorderRef.current && isRecording) {
-            mediaRecorderRef.current.stop();
-          }
         };
       } catch (err) {
         console.error("Error accessing media devices:", err);
         alert("Please allow camera and microphone permissions.");
       }
     };
-
     getMedia();
   }, []);
 
@@ -188,27 +136,6 @@ const InterviewSetup = () => {
       track.enabled = !isMicOn;
     });
     setIsMicOn(!isMicOn);
-  };
-  
-  const startRecording = () => {
-    if (!mediaRecorderRef.current || isRecording) return;
-    
-    // Clear previous audio chunks
-    setAudioChunks([]);
-    
-    // Start recording
-    mediaRecorderRef.current.start();
-    setIsRecording(true);
-    showSnackbar("🎙️ Recording started");
-  };
-  
-  const stopRecording = () => {
-    if (!mediaRecorderRef.current || !isRecording) return;
-    
-    // Stop recording
-    mediaRecorderRef.current.stop();
-    setIsRecording(false);
-    showSnackbar("⏹️ Recording stopped and processing...");
   };
 
   const toggleVideo = () => {
@@ -363,13 +290,6 @@ const InterviewSetup = () => {
           >
             {isVideoOn ? <FaVideo className="w-6 h-6" /> : <FaVideoSlash className="w-6 h-6" />}
           </button>
-          <button
-            onClick={isRecording ? stopRecording : startRecording}
-            className={`flex items-center justify-center rounded-full w-14 h-14 sm:w-16 sm:h-16 transition-all duration-200 hover:scale-105 ${isRecording ? "bg-red-600 text-white" : "bg-green-600 text-white"}`}
-            title={isRecording ? "Stop Recording" : "Start Recording"}
-          >
-            {isRecording ? <FaStop className="w-6 h-6" /> : <FaMicrophone className="w-6 h-6" />}
-          </button>
         </div>
       </div>
 
@@ -384,9 +304,7 @@ const InterviewSetup = () => {
       {/* Snackbar - Top Right */}
       {snackbar.show && (
         <div className="fixed top-6 right-6 z-50 animate-fade-in-up transition-all duration-300 ease-in-out pointer-events-none">
-          <div
-            className={`px-4 py-3 rounded-lg shadow-lg text-sm max-w-xs bg-red-500 text-white`}
-          >
+          <div className="px-4 py-3 rounded-lg shadow-lg text-sm max-w-xs bg-red-500 text-white">
             {snackbar.message}
           </div>
         </div>
@@ -449,7 +367,7 @@ const AudioVisualizer = ({ label, color = "blue" }) => {
   );
 };
 
-// Add global animation
+// Add global animation for visualizer
 if (!document.getElementById("pulse-animation-style")) {
   const style = document.createElement("style");
   style.id = "pulse-animation-style";
