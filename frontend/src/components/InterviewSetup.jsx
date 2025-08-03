@@ -1,9 +1,13 @@
-// components/InterviewSetup.js
+// i have an mp3 file while the compoent is loaded i need to play that audio file // components/InterviewSetup.js
 import React, { useState, useRef, useEffect } from "react";
-import { FaMicrophone, FaMicrophoneSlash, FaVideo, FaVideoSlash, FaPaperPlane } from "react-icons/fa";
-
+import InterviewerView from "./Interview/InterviewerView";
+import UserVideo from "./Interview/UserVideo";
+import ChatBox from "./Interview/ChatBox";
+import ControlButtons from "./Interview/ControlButtons";
+import Snackbar from "./Interview/Snackbar";
+import ShortcutTooltip from "./Interview/ShortcutTooltip";
 const InterviewSetup = () => {
-  const [isMicOn, setIsMicOn] = useState(true);
+  const [isMicOn, setIsMicOn] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [interviewerSpeaking, setInterviewerSpeaking] = useState(false);
   const [userSpeaking, setUserSpeaking] = useState(false);
@@ -19,11 +23,21 @@ const InterviewSetup = () => {
   const [analyser, setAnalyser] = useState(null);
   const [snackbar, setSnackbar] = useState({ show: false, message: "" });
   const [snackbarTimeout, setSnackbarTimeout] = useState(null);
+
   const videoRef = useRef(null);
   const audioContextRef = useRef(null);
   const dataArrayRef = useRef(null);
   const messagesEndRef = useRef(null);
   const mediaStreamRef = useRef(null);
+
+  const [hasStarted, setHasStarted] = useState(false);
+const startInterview = () => {
+    const audio = new Audio("/audio/intro.mp3");
+    audio.play().catch((e) => console.error("Audio play error:", e));
+    setHasStarted(true);
+  };
+
+
 
   // Show snackbar with auto-hide
   const showSnackbar = (msg) => {
@@ -79,7 +93,7 @@ const InterviewSetup = () => {
             const formData = new FormData();
             formData.append("image", blob, "frame.jpg");
             try {
-              const res = await fetch("http://localhost:5000/detect-face", {
+              const res = await fetch("http://localhost:3000/detect-face", {
                 method: "POST",
                 body: formData,
               });
@@ -119,16 +133,68 @@ const InterviewSetup = () => {
     getMedia();
   }, []);
 
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
-    const newMessage = {
-      sender: "customer",
-      content: inputValue,
+  const handleSendMessage = async () => {
+  if (!inputValue.trim()) return;
+
+  // Add user message
+  const userMessage = {
+    sender: "customer",
+    content: inputValue,
+    timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+  };
+  setMessages((prev) => [...prev, userMessage]);
+  setInputValue("");
+
+  // Show "thinking..." indicator
+  const typingMessage = {
+    sender: "interviewer",
+    content: "Thinking...",
+    timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    id: "typing",
+  };
+  setMessages((prev) => [...prev, typingMessage]);
+
+  try {
+    // ✅ Call YOUR backend (which talks to Gemini securely)
+    const response = await fetch("http://localhost:3000/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message: inputValue }),
+    });
+
+    const data = await response.json();
+
+    // Remove "thinking..." message
+    setMessages((prev) => prev.filter((msg) => msg.id !== "typing"));
+
+    if (!response.ok || data.error) {
+      throw new Error(data.error || "Failed to get response");
+    }
+
+    // Add AI reply
+    const aiMessage = {
+      sender: "interviewer",
+      content: data.reply,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
-    setMessages((prev) => [...prev, newMessage]);
-    setInputValue("");
-  };
+    setMessages((prev) => [...prev, aiMessage]);
+  } catch (error) {
+    console.error("Chat Error:", error);
+
+    // Remove typing indicator
+    setMessages((prev) => prev.filter((msg) => msg.id !== "typing"));
+
+    // Show error message
+    const errorMessage = {
+      sender: "interviewer",
+      content: "Sorry, I couldn't reach the AI right now.",
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    };
+    setMessages((prev) => [...prev, errorMessage]);
+  }
+};
 
   const toggleMic = () => {
     if (!mediaStream) return;
@@ -177,6 +243,19 @@ const InterviewSetup = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [toggleMic, toggleVideo]);
 
+  if (!hasStarted) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
+        <button
+          onClick={startInterview}
+          className="px-6 py-3 text-white bg-indigo-600 rounded-xl shadow-lg hover:bg-indigo-700 transition duration-300 text-lg font-semibold"
+        >
+          Start Interview
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-gray-800 flex flex-col relative font-sans">
       {/* Title */}
@@ -186,198 +265,54 @@ const InterviewSetup = () => {
         </h1>
       </div>
 
-      {/* Grid Layout */}
-      <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5 gap-5 p-5">
-        {/* Interviewer */}
-        <div className="col-span-1 sm:col-span-3 row-span-3 bg-white/70 backdrop-blur-lg rounded-2xl overflow-hidden flex items-center justify-center relative border border-gray-200/60 shadow-xl">
-          {interviewerSpeaking ? (
-            <AudioVisualizer label="Interviewer" color="green" />
-          ) : (
-            <div className="text-center text-gray-500">
-              <div className="w-20 h-20 mx-auto mb-3 bg-gradient-to-br from-gray-200 to-gray-300 rounded-full flex items-center justify-center border border-gray-300 shadow-inner">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="w-10 h-10 text-gray-500" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-2.82 0-5.18-1.33-6.26-3.16l-.89 1.25C5.94 10.13 8.11 11 10.31 11c2.08 0 3.98-.84 5.31-2.19l-.89-1.25c-1.08 1.83-3.44 3.16-6.26 3.16z" />
-                </svg>
-              </div>
-              <p className="text-sm font-medium text-gray-600">Interviewer</p>
-            </div>
-          )}
+      {/* Main Layout */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-5 gap-5 p-5 h-full">
+        {/* Left: Interviewer */}
+        <div className="lg:col-span-3 flex flex-col space-y-5">
+          <InterviewerView interviewerSpeaking={interviewerSpeaking} />
         </div>
 
-        {/* User Video */}
-        <div className="w-140 h-80 row-span-2 col-start-4 md:col-start-4 bg-gray-100 rounded-2xl overflow-hidden relative border border-gray-200/60 shadow-xl">
-          {isVideoOn ? (
-            <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-gray-500">
-              <FaVideoSlash className="w-10 h-10 mb-2 text-gray-400" />
-              <p className="text-xs font-medium">Camera Off</p>
-            </div>
-          )}
-          {userSpeaking && isMicOn && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <AudioVisualizer label="You" color="blue" />
-            </div>
-          )}
-        </div>
+        {/* Right Column: User Video + Chat */}
+        <div className="lg:col-span-2 flex flex-col space-y-5">
+          {/* User Video (Top-Right) */}
+          <UserVideo
+            videoRef={videoRef}
+            isVideoOn={isVideoOn}
+            isMicOn={isMicOn}
+            userSpeaking={userSpeaking}
+          />
 
-        {/* Chat Box */}
-        <div className="col-span-1 sm:col-span-3 md:col-span-2 row-span-2 col-start-1 md:col-start-4 row-start-5 md:row-start-3 bg-white/80 backdrop-blur-lg rounded-2xl flex flex-col border border-gray-200/60 shadow-xl">
-          {/* Header */}
-          <div className="p-3 border-b border-gray-200/50">
-            <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-              💬 <span>Live Chat</span>
-            </h3>
-          </div>
-          {/* Messages */}
-          <div className="flex-1 p-3 overflow-y-auto space-y-3 max-h-60 sm:max-h-80" style={{ contain: 'layout' }}>
-            {messages.map((msg, idx) => (
-              <div
-                key={idx}
-                className={`max-w-[80%] px-4 py-2.5 rounded-2xl leading-tight break-words ${
-                  msg.sender === "customer"
-                    ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white ml-auto shadow-md"
-                    : "bg-gray-100 text-gray-800 border border-gray-200"
-                }`}
-                style={{ wordBreak: 'break-word', overflowWrap: 'break-word', hyphens: 'auto' }}
-              >
-                <p className="whitespace-pre-wrap m-0 leading-relaxed">{msg.content}</p>
-                <span className="text-xs block mt-1 opacity-80">{msg.timestamp}</span>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-          {/* Input */}
-          <div className="p-3 border-t border-gray-200/50">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                placeholder="Type your message..."
-                className="flex-1 bg-gray-50 border border-gray-300/70 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition-all text-gray-900 placeholder-gray-400 truncate"
-                maxLength={200}
-              />
-              <button
-                onClick={handleSendMessage}
-                disabled={!inputValue.trim()}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-full p-2 text-sm transition-all shadow-md hover:shadow-lg active:scale-95 disabled:scale-100 disabled:cursor-not-allowed"
-              >
-                <FaPaperPlane className="w-4 h-4" />
-              </button>
-            </div>
+          {/* Chat Box (Below Video) */}
+          <div className="h-100">
+          <ChatBox
+            messages={messages}
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+            handleSendMessage={handleSendMessage}
+            messagesEndRef={messagesEndRef}
+          />
           </div>
         </div>
+      </div>
 
-        {/* Mic & Video Buttons */}
-        <div className="absolute bottom-6 left-9 z-10 flex gap-3">
-          <button
-            onClick={toggleMic}
-            className={`flex items-center justify-center rounded-full w-14 h-14 sm:w-16 sm:h-16 transition-all duration-200 hover:scale-105 ${
-              isMicOn ? "bg-red-100 text-red-500" : "bg-gray-100 text-gray-400"
-            }`}
-            title="Toggle Microphone (Ctrl+D)"
-          >
-            {isMicOn ? <FaMicrophone className="w-6 h-6" /> : <FaMicrophoneSlash className="w-6 h-6" />}
-          </button>
-          <button
-            onClick={toggleVideo}
-            className={`flex items-center justify-center rounded-full w-14 h-14 sm:w-16 sm:h-16 transition-all duration-200 hover:scale-105 ${
-              isVideoOn ? "bg-blue-100 text-blue-500" : "bg-gray-100 text-gray-400"
-            }`}
-            title="Toggle Video (Ctrl+E)"
-          >
-            {isVideoOn ? <FaVideo className="w-6 h-6" /> : <FaVideoSlash className="w-6 h-6" />}
-          </button>
-        </div>
+      <div className="absolute bottom-6 left-6 z-10">
+        <ControlButtons
+          isMicOn={isMicOn}
+          isVideoOn={isVideoOn}
+          toggleMic={toggleMic}
+          toggleVideo={toggleVideo}
+        />
       </div>
 
       {/* Shortcut Tooltip */}
-      <div className="absolute top-5 right-5 bg-white/90 text-gray-700 px-4 py-2 rounded-full shadow-lg text-xs backdrop-blur-sm hidden sm:block">
-        <span className="font-medium">⌨️</span>
-        <kbd className="px-2 py-1 mx-1 bg-gray-100 border border-gray-300 rounded text-xs">Ctrl+D</kbd>
-        <span className="mx-1">|</span>
-        <kbd className="px-2 py-1 mx-1 bg-gray-100 border border-gray-300 rounded text-xs">Ctrl+E</kbd>
-      </div>
+      <ShortcutTooltip />
 
-      {/* Snackbar - Top Right */}
-      {snackbar.show && (
-        <div className="fixed top-6 right-6 z-50 animate-fade-in-up transition-all duration-300 ease-in-out pointer-events-none">
-          <div className="px-4 py-3 rounded-lg shadow-lg text-sm max-w-xs bg-red-500 text-white">
-            {snackbar.message}
-          </div>
-        </div>
-      )}
-
-      {/* Global Animation for Snackbar */}
-      {(() => {
-        const style = document.getElementById("snackbar-styles");
-        if (!style) {
-          const s = document.createElement("style");
-          s.id = "snackbar-styles";
-          s.textContent = `
-            @keyframes fadeInUp {
-              from {
-                opacity: 0;
-                transform: translateY(-10px);
-              }
-              to {
-                opacity: 1;
-                transform: translateY(0);
-              }
-            }
-            .animate-fade-in-up {
-              animation: fadeInUp 0.3s ease-out forwards;
-            }
-          `;
-          document.head.appendChild(s);
-        }
-      })()}
+      {/* Snackbar */}
+      <Snackbar show={snackbar.show} message={snackbar.message} />
     </div>
   );
-};
+  };
 
-// Audio Visualizer Component
-const AudioVisualizer = ({ label, color = "blue" }) => {
-  const bars = Array(4).fill(0);
-  const colorMap = { blue: "#3b82f6", green: "#22c55e" };
-  const barColor = colorMap[color] || "#3b82f6";
-  return (
-    <div className="flex flex-col items-center justify-center h-full text-sm">
-      <div className="flex space-x-1 mb-2">
-        {bars.map((_, i) => (
-          <div
-            key={i}
-            style={{
-              width: "5px",
-              backgroundColor: barColor,
-              borderRadius: "4px",
-              height: `${Math.floor(Math.random() * 20) + 8}px`,
-              animation: `pulse 0.5s ease-in-out infinite ${i * 0.12}s`,
-            }}
-            className="origin-bottom"
-          />
-        ))}
-      </div>
-      <span className="font-semibold text-gray-700 bg-white/70 px-2 py-1 rounded-full text-xs shadow-sm">
-        {label}
-      </span>
-    </div>
-  );
-};
-
-// Add global animation for visualizer
-if (!document.getElementById("pulse-animation-style")) {
-  const style = document.createElement("style");
-  style.id = "pulse-animation-style";
-  style.textContent = `
-    @keyframes pulse {
-      0%, 100% { transform: scaleY(1); }
-      50% { transform: scaleY(1.8); }
-    }
-  `;
-  document.head.appendChild(style);
-}
-
+// export default InterviewSetup;
 export default InterviewSetup;
+// Add this to your app's entry point or use a layout

@@ -4,6 +4,10 @@ import cv2
 import numpy as np
 import time
 import mediapipe as mp
+from openai import OpenAI
+import os
+from dotenv import load_dotenv
+import traceback
 
 mp_face_detection = mp.solutions.face_detection
 face_detection = mp_face_detection.FaceDetection(
@@ -13,6 +17,7 @@ face_detection = mp_face_detection.FaceDetection(
 
 app = Flask(__name__)
 CORS(app)
+
 
 @app.route('/detect-face', methods=['POST'])
 def detect_face():
@@ -66,7 +71,7 @@ def detect_face():
             if x1 < 0 or y1 < 0 or x2 > w or y2 > h:
                 message = "⚠️ Face not fully visible. Adjust your position."
             else:
-                message = ""  
+                message = ""
     else:
         message = "❌ No face detected. Please look at the camera."
 
@@ -75,5 +80,44 @@ def detect_face():
 
     return jsonify({'status': 'success', 'message': message})
 
+
+
+load_dotenv()
+client = OpenAI(
+    api_key=os.getenv("GROQ_API_KEY"),
+    base_url="https://api.groq.com/openai/v1"
+)
+
+@app.route("/api/chat", methods=["POST"])
+def chat():
+    try:
+        data = request.get_json()
+        user_message = data.get("message", "").strip()
+
+        if not user_message:
+            return jsonify({"error": "No message provided"}), 400
+
+        # New API style
+        response = client.chat.completions.create(
+    model="llama3-70b-8192",  # ✅ valid model
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": user_message}
+    ]
+)
+
+
+        ai_reply = response.choices[0].message.content
+
+        return jsonify({
+            "reply": ai_reply,
+            "timestamp": response.created
+        })
+
+    except Exception as e:
+        print("Error:", str(e))
+        traceback.print_exc()
+        return jsonify({"error": "Sorry, AI service is unavailable."}), 500
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=3000)

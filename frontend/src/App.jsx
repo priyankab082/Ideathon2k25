@@ -1,5 +1,6 @@
 // App.js
 import { useState } from 'react';
+import DelayedInterviewSetup from './components/DelayedInterviewSetup'
 import { Route, Routes, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -21,7 +22,7 @@ function App() {
         path="/"
         element={
           <ProtectedRoute>
-            <Navigate to="/home"  />
+            <Navigate to="/home" />
           </ProtectedRoute>
         }
       />
@@ -50,16 +51,17 @@ function App() {
         element={
           <ProtectedRoute>
             <ErrorBoundary>
-              <InterviewSetup />
+              <DelayedInterviewSetup />
             </ErrorBoundary>
           </ProtectedRoute>
         }
       />
+
       <Route path="/dashboard" element={<ProtectedRoute>
-            <ErrorBoundary>
-             <Dashboard />
-            </ErrorBoundary>
-          </ProtectedRoute>} />
+        <ErrorBoundary>
+          <Dashboard />
+        </ErrorBoundary>
+      </ProtectedRoute>} />
 
       {/* Catch-all Redirect */}
       <Route path="*" element={<Navigate to="/home" replace />} />

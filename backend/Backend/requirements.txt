@@ -6,3 +6,6 @@ flask-cors
 numpy
 # opencv-python
 mediapipe
+google-generativeai
+openai==0.28.1
+traceback
