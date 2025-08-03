@@ -10,6 +10,7 @@ import Profile from './components/Profile';
 import HomePage from './components/HomePage'; // Make sure this path is correct
 import Dashboard from "./components/Dashboard";
 import InterviewSetup from "./components/InterviewSetup";
+import Results from "./components/Results";
 function App() {
   return (
     <Routes>
@@ -62,6 +63,11 @@ function App() {
           <Dashboard />
         </ErrorBoundary>
       </ProtectedRoute>} />
+      <Route path="/results" element={
+        <ProtectedRoute>
+        <ErrorBoundary><Results />
+         </ErrorBoundary>
+      </ProtectedRoute> } />
 
       {/* Catch-all Redirect */}
       <Route path="*" element={<Navigate to="/home" replace />} />

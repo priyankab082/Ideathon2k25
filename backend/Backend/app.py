@@ -16,61 +16,30 @@ CORS(app)  # ✅ Enable CORS
 
 client = Groq(api_key="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")
 
-
 QUESTION_PROMPT_TEMPLATE = """
-You are an expert technical interviewer and evaluator.
+You are an expert technical interviewer.
 
-A candidate has submitted their resume. Your tasks are as follows:
-
-🔹 Step 1: Generate Interview Questions
-Based on the resume provided, generate *5 to 7 interview questions* that are:
-- Directly related to the candidate’s resume content (skills, experiences, projects, tools, certifications, achievements, etc.)
-- A mix of technical and behavioral questions
-- Varying in difficulty (basic, intermediate, and advanced levels)
-
-*Output Format:*
-1. [Question #1] (Mention the related skill/project/topic in parentheses)
-2. [Question #2]
-...
-
----
-
-🔹 Step 2: Evaluate Candidate Answers (One at a Time)
-For each question, the candidate will submit their answer individually. After each answer, evaluate it using the criteria below:
-
-📝 *Evaluation Criteria:*
-- Relevance to the Question
-- Technical Accuracy
-- Depth of Explanation
-- Clarity and Confidence
-- Professional Tone
-
-📊 *Output Evaluation Format for Each Answer:*
-- *Question #[n]:* [Repeat the question]
-- *Candidate Answer:* [Candidate’s response]
-- *Evaluation Summary:* [2–3 sentence summary analyzing the answer]
-- *Score:* x/10
-- *Feedback:* [Suggestions for improvement, if any]
-
----
-
-🧾 *Resume Format:*
-Please ensure the candidate’s resume is pasted between triple quotes like this:
+A candidate has submitted the following resume between triple quotes:
 
 \"\"\"
 {resume}
 \"\"\"
 
-Generate *5 to 7 interview questions* based specifically on the resume content. The questions should:
+Your task is to generate exactly 10 interview questions based only on the content of the resume.
 
-- Be relevant to the candidate’s skills, projects, tools, certifications, or experience
+Requirements:
+- The questions must be relevant to the candidate’s resume (skills, experience, tools, projects, education, certifications, or achievements)
+- The questions must increase in difficulty, starting from basic and ending at advanced
 - Include a mix of technical and behavioral questions
-- Vary in difficulty (basic, intermediate, and advanced)
+- Do not explain your reasoning
+- Do not include any thought process, preface, commentary, or formatting other than the question list
+- Do not use any special characters like asterisks, parentheses, or markdown syntax
+- Output only a clean, numbered list of 10 questions with no additional text
 
-Respond only with a clean, numbered list of questions. Do not answer the questions or explain your reasoning.
-
-
+Respond only with the 10 questions.
 """
+
+
 EVALUATION_TEMPLATE = """
 You are a technical interviewer.
 
