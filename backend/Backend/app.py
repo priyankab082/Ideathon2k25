@@ -1,134 +1,267 @@
+from groq import Groq
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import cv2
 import numpy as np
+import base64
 import math
-from face_detector import get_face_detector, find_faces
-from face_landmarks import get_landmark_model, detect_marks
+from io import BytesIO
+from PIL import Image
 
-# Load models
-face_model = get_face_detector()
-landmark_model = get_landmark_model()
+# Import from your script
+# from head_pose_prediction import detect_marks, find_faces, face_model, landmark_model, model_points, head_pose_points
+app = Flask(__name__)
+CORS(app)  # ✅ Enable CORS
 
-font = cv2.FONT_HERSHEY_SIMPLEX
 
-# 3D model points (nose tip, chin, eyes, mouth corners)
-model_points = np.array([
-    (0.0, 0.0, 0.0),             # Nose tip
-    (0.0, -330.0, -65.0),        # Chin
-    (-225.0, 170.0, -135.0),     # Left eye left corner
-    (225.0, 170.0, -135.0),      # Right eye right corner
-    (-150.0, -150.0, -125.0),    # Left mouth corner
-    (150.0, -150.0, -125.0)      # Right mouth corner
-])
+client = Groq(api_key="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")
 
-def get_camera_matrix(size):
-    focal_length = size[1]
-    center = (size[1] / 2, size[0] / 2)
-    return np.array([
-        [focal_length, 0, center[0]],
-        [0, focal_length, center[1]],
-        [0, 0, 1]
-    ], dtype="double")
 
-def get_2d_points(img, rotation_vector, translation_vector, camera_matrix):
-    rear_size = 1
-    rear_depth = 0
-    front_size = img.shape[1]
-    front_depth = front_size * 2
+QUESTION_PROMPT_TEMPLATE = """
+You are an expert technical interviewer and evaluator.
 
-    point_3d = np.array([
-        (-rear_size, -rear_size, rear_depth),
-        (-rear_size, rear_size, rear_depth),
-        (rear_size, rear_size, rear_depth),
-        (rear_size, -rear_size, rear_depth),
-        (-rear_size, -rear_size, rear_depth),
-        (-front_size, -front_size, front_depth),
-        (-front_size, front_size, front_depth),
-        (front_size, front_size, front_depth),
-        (front_size, -front_size, front_depth),
-        (-front_size, -front_size, front_depth)
-    ], dtype=np.float64).reshape(-1, 3)
+A candidate has submitted their resume. Your tasks are as follows:
 
-    dist_coeffs = np.zeros((4,1))
-    (point_2d, _) = cv2.projectPoints(point_3d,
-                                      rotation_vector,
-                                      translation_vector,
-                                      camera_matrix,
-                                      dist_coeffs)
-    return np.int32(point_2d.reshape(-1, 2))
+🔹 Step 1: Generate Interview Questions
+Based on the resume provided, generate *5 to 7 interview questions* that are:
+- Directly related to the candidate’s resume content (skills, experiences, projects, tools, certifications, achievements, etc.)
+- A mix of technical and behavioral questions
+- Varying in difficulty (basic, intermediate, and advanced levels)
 
-def head_pose_points(img, rotation_vector, translation_vector, camera_matrix):
-    points = get_2d_points(img, rotation_vector, translation_vector, camera_matrix)
-    y = (points[5] + points[8]) // 2
-    x = points[2]
-    return (x, y)
+*Output Format:*
+1. [Question #1] (Mention the related skill/project/topic in parentheses)
+2. [Question #2]
+...
 
-# Open webcam
-cap = cv2.VideoCapture(0)
+---
 
-while True:
-    ret, img = cap.read()
-    if not ret:
-        break
+🔹 Step 2: Evaluate Candidate Answers (One at a Time)
+For each question, the candidate will submit their answer individually. After each answer, evaluate it using the criteria below:
 
-    size = img.shape
-    camera_matrix = get_camera_matrix(size)
+📝 *Evaluation Criteria:*
+- Relevance to the Question
+- Technical Accuracy
+- Depth of Explanation
+- Clarity and Confidence
+- Professional Tone
 
-    faces = find_faces(img, face_model)
-    for face in faces:
-        marks = detect_marks(img, landmark_model, face)
+📊 *Output Evaluation Format for Each Answer:*
+- *Question #[n]:* [Repeat the question]
+- *Candidate Answer:* [Candidate’s response]
+- *Evaluation Summary:* [2–3 sentence summary analyzing the answer]
+- *Score:* x/10
+- *Feedback:* [Suggestions for improvement, if any]
 
-        image_points = np.array([
-            marks[30],  # Nose tip
-            marks[8],   # Chin
-            marks[36],  # Left eye left corner
-            marks[45],  # Right eye right corner
-            marks[48],  # Left mouth corner
-            marks[54]   # Right mouth corner
-        ], dtype="double")
+---
 
-        dist_coeffs = np.zeros((4,1))
-        success, rotation_vector, translation_vector = cv2.solvePnP(
-            model_points, image_points, camera_matrix, dist_coeffs, flags=cv2.SOLVEPNP_UPNP)
+🧾 *Resume Format:*
+Please ensure the candidate’s resume is pasted between triple quotes like this:
 
-        (nose_end_point2D, _) = cv2.projectPoints(
-            np.array([(0.0, 0.0, 1000.0)]),
-            rotation_vector, translation_vector,
-            camera_matrix, dist_coeffs)
+\"\"\"
+{resume}
+\"\"\"
 
-        p1 = (int(image_points[0][0]), int(image_points[0][1]))
-        p2 = (int(nose_end_point2D[0][0][0]), int(nose_end_point2D[0][0][1]))
+Generate *5 to 7 interview questions* based specifically on the resume content. The questions should:
 
-        x1, x2 = head_pose_points(img, rotation_vector, translation_vector, camera_matrix)
+- Be relevant to the candidate’s skills, projects, tools, certifications, or experience
+- Include a mix of technical and behavioral questions
+- Vary in difficulty (basic, intermediate, and advanced)
 
-        # Draw nose line and side line
-        cv2.line(img, p1, p2, (0, 255, 255), 2)
-        cv2.line(img, tuple(x1), tuple(x2), (255, 0, 0), 2)
+Respond only with a clean, numbered list of questions. Do not answer the questions or explain your reasoning.
 
-        try:
-            ang1 = int(math.degrees(math.atan2(p2[1] - p1[1], p2[0] - p1[0])))
-        except:
-            ang1 = 90
-        try:
-            m = (x2[1] - x1[1]) / (x2[0] - x1[0])
-            ang2 = int(math.degrees(math.atan(-1 / m)))
-        except:
-            ang2 = 90
 
-        if ang1 >= 48:
-            cv2.putText(img, 'Head down', (30, 30), font, 1, (0, 0, 255), 2)
-        elif ang1 <= -48:
-            cv2.putText(img, 'Head up', (30, 30), font, 1, (0, 0, 255), 2)
+"""
+EVALUATION_TEMPLATE = """
+You are a technical interviewer.
 
-        if ang2 >= 48:
-            cv2.putText(img, 'Head right', (30, 60), font, 1, (255, 0, 0), 2)
-        elif ang2 <= -48:
-            cv2.putText(img, 'Head left', (30, 60), font, 1, (255, 0, 0), 2)
+Evaluate the candidate's answer to the interview question based on the following criteria:
+- Relevance to the Question
+- Technical Accuracy
+- Depth of Explanation
+- Clarity and Confidence
+- Professional Tone
 
-    # Show frame
-    cv2.imshow('Head Pose Estimation', img)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+Provide:
+- Question #[n]: [Repeat the question]
+- Candidate Answer: [The answer]
+- Evaluation Summary: [2–3 sentence summary]
+- Score: x/10
+- Feedback: Suggestions for improvement, if any
 
-# Release resources
-cap.release()
-cv2.destroyAllWindows()
+Now evaluate:
+
+Question: {question}
+Answer: {answer}
+"""
+
+
+@app.route('/questions', methods=['POST'])
+def generate_questions():
+    data = request.get_json()
+    resume = data.get("resume", "").strip()
+    if not resume:
+        return jsonify({"error": "No resume provided"}), 400
+
+    prompt = QUESTION_PROMPT_TEMPLATE.format(resume=resume)
+
+
+    response = client.chat.completions.create(
+        model="deepseek-r1-distill-llama-70b",
+        messages=[
+            {"role": "user", "content": prompt}
+        ]
+    )
+
+    questions_text = response.choices[0].message.content.strip()
+    questions = [q.strip() for q in questions_text.split("\n") if q.strip()]
+    return jsonify({"questions": questions})
+
+
+@app.route('/evaluate', methods=['POST'])
+def evaluate_answer():
+    data = request.get_json()
+    question = data.get("question", "")
+    answer = data.get("answer", "")
+
+    if not question or not answer:
+        return jsonify({"error": "Question and answer must be provided"}), 400
+
+    evaluation_prompt = EVALUATION_TEMPLATE.format(question=question, answer=answer)
+
+    response = client.chat.completions.create(
+        model="deepseek-r1-distill-llama-70b",
+        messages=[
+            {"role": "user", "content": evaluation_prompt}
+        ]
+    )
+
+    evaluation = response.choices[0].message.content.strip()
+    return jsonify({"evaluation": evaluation}), 200
+
+# @app.route('/predict', methods=['POST'])
+# def predict():
+#     try:
+#         # 🔹 1. Get JSON data
+#         data = request.get_json()
+#         if not data or 'image' not in data:
+#             return jsonify({"error": "No image data provided"}), 400
+
+#         image_str = data['image']
+
+#         # 🔹 2. Parse base64
+#         if ',' in image_str:
+#             header, encoded = image_str.split(',', 1)
+#         else:
+#             encoded = image_str
+
+#         try:
+#             img_data = base64.b64decode(encoded)
+#         except Exception as e:
+#             return jsonify({"error": "Invalid base64", "details": str(e)}), 400
+
+#         try:
+#             img = Image.open(BytesIO(img_data))
+#             img = np.array(img)
+#         except Exception as e:
+#             return jsonify({"error": "Cannot open image", "details": str(e)}), 400
+
+#         # 🔹 3. Convert to BGR
+#         if len(img.shape) == 2:
+#             img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+#         elif img.shape[2] == 4:
+#             img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
+#         elif img.shape[2] == 3:
+#             img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+#         else:
+#             return jsonify({"error": "Unsupported image format"}), 400
+
+#         h, w = img.shape[:2]
+
+#         # 🔹 4. Camera matrix
+#         focal_length = w
+#         center = (w / 2, h / 2)
+#         camera_matrix = np.array([
+#             [focal_length, 0, center[0]],
+#             [0, focal_length, center[1]],
+#             [0, 0, 1]
+#         ], dtype="double")
+
+#         dist_coeffs = np.zeros((4, 1))
+
+#         # 🔹 5. Detect face
+#         faces = find_faces(img, face_model)
+#         if len(faces) == 0:
+#             return jsonify([{
+#                 "vertical": "unknown",
+#                 "horizontal": "unknown",
+#                 "pitch": 0,
+#                 "yaw": 0,
+#                 "error": "No face detected"
+#             }]), 200
+
+#         face = faces[0]
+#         try:
+#             marks = detect_marks(img, landmark_model, face)
+#         except Exception as e:
+#             return jsonify({"error": "Landmark detection failed", "details": str(e)}), 500
+
+#         # 🔹 6. Image points
+#         image_points = np.array([
+#             marks[30],  # Nose tip
+#             marks[8],   # Chin
+#             marks[36],  # Left eye left
+#             marks[45],  # Right eye right
+#             marks[48],  # Left mouth
+#             marks[54]   # Right mouth
+#         ], dtype="double")
+
+#         # 🔹 7. Solve PnP
+#         try:
+#             success, rvec, tvec = cv2.solvePnP(
+#                 model_points, image_points, camera_matrix, dist_coeffs, flags=cv2.SOLVEPNP_UPNP
+#             )
+#             if not success:
+#                 return jsonify({"error": "PnP solver failed"}), 500
+#         except Exception as e:
+#             return jsonify({"error": "solvePnP failed", "details": str(e)}), 500
+
+#         # 🔹 8. Project nose vector
+#         try:
+#             nose_2d, _ = cv2.projectPoints(
+#                 np.array([[0.0, 0.0, 1000.0]]), rvec, tvec, camera_matrix, dist_coeffs
+#             )
+#             p1 = (int(image_points[0][0]), int(image_points[0][1]))
+#             p2 = (int(nose_2d[0][0][0]), int(nose_2d[0][0][1]))
+
+#             pitch = math.degrees(math.atan2(p2[1] - p1[1], p2[0] - p1[0]))
+#         except:
+#             pitch = 0
+
+#         # 🔹 9. Yaw (horizontal)
+#         try:
+#             x1, x2 = head_pose_points(img, rvec, tvec, camera_matrix)
+#             yaw = math.degrees(math.atan2(-(x2[0] - x1[0]), x2[1] - x1[1]))
+#         except:
+#             yaw = 0
+
+#         # 🔹 10. Classify
+#                 # 🔹 10. Classify
+#         vertical = "up" if pitch < -15 else "down" if pitch > 15 else "forward"
+#         horizontal = "right" if yaw > 15 else "left" if yaw < -15 else "center"
+
+#         return jsonify([{
+#             "vertical": vertical,
+#             "horizontal": horizontal,
+#             "pitch": float(pitch),
+#             "yaw": float(yaw)
+#         }])
+
+#     except Exception as e:
+#         print("❌ Server error:", str(e))
+#         return jsonify({
+#             "error": "Internal server error",
+#             "details": str(e)
+#         }), 500
+
+if __name__== "__main__":
+    app.run(host="localhost", port=4000)

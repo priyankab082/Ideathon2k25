@@ -6,7 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // Optional: for auth later
-
+const Resume=require("../models/Resume")
 // =======================
 // Multer File Upload Setup
 // =======================
@@ -185,11 +185,64 @@ router.post('/upload-profile-photo', upload.single('profilePhoto'), (req, res) =
 // =======================
 // Upload Resume
 // =======================
-router.post('/upload-resume', upload.single('resume'), (req, res) => {
-  if (!req.file) return res.status(400).json({ message: 'No resume uploaded' });
-  const resumeUrl = `/uploads/resumes/${req.file.filename}`;
-  res.status(200).json({ resumeUrl });
+async function extractText(filePath, mimetype) {
+  let text = '';
+
+  if (mimetype === 'application/pdf') {
+    const buffer = fs.readFileSync(filePath);
+    const data = await pdfParse(buffer);
+    text = data.text;
+  } else if (mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    const parser = new DocxParser();
+    const result = await parser.parse(fs.createReadStream(filePath));
+    text = result.text;
+  } else if (mimetype === 'application/msword') {
+    const result = await mammoth.extractText({ path: filePath });
+    text = result.value;
+  } else {
+    throw new Error('Unsupported file type');
+  }
+
+  return text.trim();
+}
+
+// POST /api/upload-resume
+router.post('/upload-resume', upload.single('resume'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+
+  const { path: filePath, originalname, mimetype } = req.file;
+
+  // Get userName from request body (frontend should send it)
+  const { userName } = req.body;
+  if (!userName) {
+    return res.status(400).json({ message: 'User name is required' });
+  }
+
+  try {
+    // Extract text from file
+    const extractedText = await extractText(filePath, mimetype);
+
+    // Save to DB
+    const resumeDoc = new Resume({
+      userName,
+      filename: originalname,
+      content: extractedText,
+    });
+    await resumeDoc.save();
+
+    // Public URL (ensure static folder is served)
+    const resumeUrl = `/uploads/resumes/${req.file.filename}`;
+
+    res.status(200).json({ resumeUrl, resumeId: resumeDoc._id });
+  } catch (error) {
+    console.error('Resume processing failed:', error);
+    res.status(500).json({ message: 'Failed to process resume', error: error.message });
+  }
 });
+
+
 
 // =======================
 // GET: Current User Profile

@@ -8,4 +8,11 @@ numpy
 mediapipe
 google-generativeai
 openai==0.28.1
-traceback
+# traceback
+groq
+cv2
+io
+base64
+math
+numpy
+PIL
