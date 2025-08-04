@@ -95,7 +95,7 @@ Answer: {answer}
 """
 
 
-@app.route('/questions', methods=['POST'])
+@app.route('s', methods=['POST'])
 def generate_questions():
     if 'resume' not in request.files:
         return jsonify({"error": "No resume file provided"}), 400

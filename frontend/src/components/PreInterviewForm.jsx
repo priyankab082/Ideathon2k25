@@ -1,107 +1,138 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
+import { IoCloudUploadOutline } from "react-icons/io5";
 
 const PreInterviewForm = ({ onStartInterview }) => {
-  const [userResume, setUserResume] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const recognitionRef = useRef(null);
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleMic = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Speech recognition not supported in this browser.");
-      return;
-    }
-
-    if (!recognitionRef.current) {
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.lang = "en-US";
-      recognitionRef.current.interimResults = false;
-
-      recognitionRef.current.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setUserResume((prev) => prev + " " + transcript);
-      };
-
-      recognitionRef.current.onerror = (event) => {
-        console.error("Speech recognition error:", event.error);
-        setIsRecording(false);
-      };
-
-      recognitionRef.current.onend = () => {
-        setIsRecording(false);
-      };
-    }
-
-    if (!isRecording) {
-      recognitionRef.current.start();
-      setIsRecording(true);
-    } else {
-      recognitionRef.current.stop();
-      setIsRecording(false);
+  // Handle file selection
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      if (selectedFile.type === "application/pdf") {
+        setFile(selectedFile);
+        setError("");
+      } else {
+        setError("Please upload a valid PDF file.");
+        setFile(null);
+      }
     }
   };
 
-  const handleSubmit = async () => {
-    if (!userResume.trim()) {
-      alert("Please paste your resume.");
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!file) {
+      setError("Please select a PDF resume to upload.");
       return;
     }
 
-    setLoading(true);
+    setUploading(true);
+    setError("");
+
+    const formData = new FormData();
+    formData.append("resume_pdf", file); // must match backend key
+
     try {
-      const res = await fetch("http://localhost:4000/questions", {
+      const response = await fetch("http://localhost:4000/questions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resume: userResume }),
+        body: formData, // No Content-Type header when using FormData (browser sets it automatically)
       });
 
-      const data = await res.json();
-      if (res.ok && data.questions) {
-        onStartInterview(userResume, data.questions);
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || `HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.questions && Array.isArray(data.questions)) {
+        const resumeText = data.resume_text || "PDF uploaded successfully.";
+        onStartInterview(resumeText, data.questions);
       } else {
-        alert("Failed to generate questions: " + (data.error || "Unknown error"));
+        throw new Error("Invalid response: missing questions.");
       }
     } catch (err) {
-      console.error("Fetch error:", err);
-      alert("Could not connect to the server. Is Flask running?");
+      console.error("Upload failed:", err);
+      setError(
+        err.message.includes("Failed to fetch")
+          ? "Could not connect to the server. Is Flask running at http://localhost:4000?"
+          : `Error: ${err.message}`
+      );
     } finally {
-      setLoading(false);
+      setUploading(false);
     }
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 p-4">
-      <div className="bg-white p-8 rounded-2xl shadow-xl max-w-2xl w-full">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Welcome to the Interview</h2>
-        <p className="text-gray-600 mb-6">Please paste your resume or speak to record:</p>
+    <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
+      <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-2xl w-full border border-gray-100">
+        <h2 className="text-3xl font-bold text-gray-800 mb-3 text-center">Upload Your Resume</h2>
+        <p className="text-gray-600 mb-6 text-center">Please upload your resume as a PDF file to begin the interview setup.</p>
 
-        <div className="relative mb-4">
-          <textarea
-            value={userResume}
-            onChange={(e) => setUserResume(e.target.value)}
-            placeholder="Paste or speak your full resume here..."
-            rows={8}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none font-mono text-sm"
-          />
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-indigo-400 transition-colors duration-200">
+            <label
+              htmlFor="pdf-upload"
+              className="cursor-pointer flex flex-col items-center"
+            >
+              {file ? (
+                <span className="text-green-600 font-medium">📄 {file.name}</span>
+              ) : (
+                <>
+                  <IoCloudUploadOutline className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+
+                  <span className="text-lg text-indigo-600 hover:underline font-medium">
+                    Choose PDF Resume
+                  </span>
+                  <span className="text-sm text-gray-500 mt-1">or drag and drop</span>
+                </>
+              )}
+              <input
+                id="pdf-upload"
+                type="file"
+                accept=".pdf"
+                onChange={handleFileChange}
+                className="sr-only" // Hidden visually but accessible
+              />
+            </label>
+          </div>
+
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+
           <button
-            type="button"
-            onClick={handleMic}
-            className="absolute top-2 right-2 p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition"
-            title={isRecording ? "Stop Recording" : "Start Recording"}
+            type="submit"
+            disabled={uploading}
+            className="w-full px-7 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-lg rounded-2xl shadow-lg hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 disabled:opacity-80 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02]"
           >
-            {isRecording ? "🎤..." : "🎤"}
+            {uploading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 inline" fill="none" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Uploading & Processing...
+              </>
+            ) : (
+              "Start Interview"
+            )}
           </button>
-        </div>
+        </form>
 
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="px-6 py-3 text-white bg-indigo-600 rounded-xl shadow-lg hover:bg-indigo-700 transition duration-300 text-lg font-semibold w-full disabled:opacity-70"
-        >
-          {loading ? "Generating Questions..." : "Start Interview"}
-        </button>
+        <p className="text-xs text-gray-400 text-center mt-4">
+          We only use your resume to personalize the interview. It will not be stored.
+        </p>
       </div>
     </div>
   );

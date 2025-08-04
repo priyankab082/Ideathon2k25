@@ -2,7 +2,6 @@
 const mongoose = require('mongoose');
 
 const resumeSchema = new mongoose.Schema({
-  // User's full name (you can split into first/last if needed)
   userName: {
     type: String,
     required: true,
