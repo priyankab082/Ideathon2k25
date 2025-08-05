@@ -1,0 +1,1291 @@
+
+{
+  "stacks": [
+    {
+      "name": "HTML",
+      "description": "HyperText Markup Language for creating web pages and applications.",
+      "icon": "📄",
+        "playlistUrl": "https://www.youtube.com/embed?listType=playlist&list=PLblh5JKOoLUICTaGLRoHQDuFVvgtAIdjl",
+      "playlistTitle": "Data Science & AI Full Course - Andrew Ng (Coursera)",
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is HTML and what is its purpose?",
+          "answer": "HTML (HyperText Markup Language) is the standard markup language for creating web pages. It defines the structure and content of web documents using elements and tags."
+        },
+        {
+          "id": 2,
+          "question": "What are HTML5 semantic elements?",
+          "answer": "Semantic elements clearly describe their meaning to browsers and developers (e.g., <header>, <footer>, <article>, <section>, <nav>, <aside>). They improve accessibility and SEO."
+        },
+        {
+          "id": 3,
+          "question": "Difference between <div> and <span>",
+          "answer": "<div> is a block-level element used for grouping large content sections, while <span> is an inline element for styling small text portions within other elements."
+        },
+        {
+          "id": 4,
+          "question": "What is the DOCTYPE declaration?",
+          "answer": "<!DOCTYPE html> declares the document type and HTML version (HTML5 in this case) to ensure proper rendering by browsers."
+        },
+        {
+          "id": 5,
+          "question": "Explain the HTML document structure.",
+          "answer": "Basic structure: <!DOCTYPE html>, <html> (root), <head> (metadata), and <body> (visible content). The head contains title, meta, links; body contains the actual page content."
+        },
+        {
+          "id": 6,
+          "question": "What are HTML attributes?",
+          "answer": "Attributes provide additional information about elements (e.g., href in <a>, src in <img>). They're always specified in the start tag as name/value pairs."
+        },
+        {
+          "id": 7,
+          "question": "How to create a hyperlink in HTML?",
+          "answer": "Use <a href='url'>link text</a>. The href attribute specifies the destination URL, which can be absolute, relative, or anchor links."
+        },
+        {
+          "id": 8,
+          "question": "What is the difference between <ol>, <ul>, and <dl>?",
+          "answer": "<ol> creates ordered (numbered) lists, <ul> creates unordered (bulleted) lists, and <dl> creates description lists (terms and definitions)."
+        },
+        {
+          "id": 9,
+          "question": "How to embed multimedia in HTML5?",
+          "answer": "Use <audio> for sound, <video> for videos, and <embed>/<object> for other media. Specify sources with <source> tags and include fallback content."
+        },
+        {
+          "id": 10,
+          "question": "What is the purpose of the alt attribute in images?",
+          "answer": "The alt attribute provides alternative text for screen readers and when images can't load. It's crucial for accessibility and SEO."
+        },
+        {
+          "id": 11,
+          "question": "Explain HTML forms and their components.",
+          "answer": "Forms (<form>) collect user input. Contain elements like <input>, <textarea>, <select>, <button>, with attributes like name, type (text, password, radio, etc.), and action for submission."
+        },
+        {
+          "id": 12,
+          "question": "What are HTML5 APIs? Name some.",
+          "answer": "HTML5 introduced JavaScript APIs like Geolocation, Web Storage (localStorage/sessionStorage), Canvas, Drag and Drop, Web Workers, and Web Sockets."
+        },
+        {
+          "id": 13,
+          "question": "How does localStorage differ from sessionStorage?",
+          "answer": "localStorage persists data after browser closes (until manually cleared), while sessionStorage clears data when the session ends (tab/window closes). Both store key-value pairs."
+        },
+        {
+          "id": 14,
+          "question": "What is the canvas element?",
+          "answer": "<canvas> is a container for drawing graphics via JavaScript. It provides methods to draw shapes, text, images, and animations programmatically."
+        },
+        {
+          "id": 15,
+          "question": "Explain the difference between SVG and Canvas.",
+          "answer": "SVG is vector-based (resolution-independent, DOM-accessible), while Canvas is pixel-based (faster for complex drawings, no DOM access). SVG uses XML, Canvas uses JavaScript."
+        },
+        {
+          "id": 16,
+          "question": "What are data attributes?",
+          "answer": "Custom attributes prefixed with 'data-' (e.g., data-user-id) allow storing extra information in elements without affecting presentation. Accessed via dataset property in JavaScript."
+        },
+        {
+          "id": 17,
+          "question": "How to make a website responsive in HTML?",
+          "answer": "Use viewport meta tag, fluid layouts (%), flexible images (max-width:100%), CSS media queries, and responsive frameworks. HTML5 semantic elements also help structure content."
+        },
+        {
+          "id": 18,
+          "question": "What is Web Accessibility (a11y) in HTML?",
+          "answer": "Practices making websites usable by people with disabilities. Includes semantic HTML, ARIA attributes, keyboard navigation, alt text, proper contrast, and screen reader compatibility."
+        },
+        {
+          "id": 19,
+          "question": "Explain the meta tag and its uses.",
+          "answer": "<meta> provides metadata about the HTML document. Common uses: charset (character encoding), viewport (responsive design), description (SEO), keywords, and author information."
+        },
+        {
+          "id": 20,
+          "question": "What is the difference between HTML and XHTML?",
+          "answer": "XHTML is stricter XML-based version of HTML. Requires proper nesting, closed tags, lowercase elements, and quoted attributes. HTML5 is more forgiving and has new semantic elements."
+        }
+      ]
+    },
+    {
+      "name": "CSS",
+      "description": "Cascading Style Sheets for styling and layout of web documents.",
+      "icon": "🎨",
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is CSS and how does it work with HTML?",
+          "answer": "CSS (Cascading Style Sheets) describes how HTML elements are displayed. It separates content from presentation by applying styles via selectors targeting HTML elements."
+        },
+        {
+          "id": 2,
+          "question": "Explain the CSS box model.",
+          "answer": "Every element is a rectangular box with: content (inner), padding (space around content), border (around padding), and margin (outer space). Width/height by default apply to content only (can be changed with box-sizing)."
+        },
+        {
+          "id": 3,
+          "question": "Difference between margin and padding?",
+          "answer": "Padding is space inside an element (between content and border), while margin is space outside the element (between border and neighboring elements). Padding affects click/hit area; margin doesn't."
+        },
+        {
+          "id": 4,
+          "question": "What are CSS selectors? Name types.",
+          "answer": "Patterns selecting elements to style. Types: element (tag), class (.), id (#), attribute ([attr]), pseudo-class (:hover), pseudo-element (::before), descendant (space), child (>), sibling (~, +), universal (*)."
+        },
+        {
+          "id": 5,
+          "question": "What is specificity in CSS?",
+          "answer": "Rules determining which styles apply when conflicts occur. Calculated by: inline styles (1000), IDs (100), classes/attributes (10), elements (1). Higher specificity overrides others."
+        },
+        {
+          "id": 6,
+          "question": "Explain CSS positioning (static, relative, absolute, fixed, sticky).",
+          "answer": "static: default flow; relative: offset from normal position; absolute: positioned relative to nearest positioned ancestor; fixed: relative to viewport; sticky: hybrid of relative and fixed."
+        },
+        {
+          "id": 7,
+          "question": "What is z-index? How does it work?",
+          "answer": "z-index controls stacking order of positioned elements. Higher values appear in front. Only works on elements with position (not static). Context matters (stacking contexts can isolate z-index hierarchies)."
+        },
+        {
+          "id": 8,
+          "question": "What are CSS preprocessors? Name some.",
+          "answer": "Tools extending CSS with variables, nesting, mixins, functions. Examples: Sass (most popular), Less, Stylus. They compile to standard CSS and improve maintainability."
+        },
+        {
+          "id": 9,
+          "question": "Explain Flexbox layout.",
+          "answer": "One-dimensional layout model for distributing space and aligning items efficiently. Uses container (display:flex) and items. Key properties: justify-content (main axis), align-items (cross axis), flex-direction, flex-wrap."
+        },
+        {
+          "id": 10,
+          "question": "Explain CSS Grid layout.",
+          "answer": "Two-dimensional system with rows and columns. Define grid container (display:grid) and children. Use grid-template-columns/rows, gap, and placement properties (grid-column/row). Combines well with Flexbox."
+        },
+        {
+          "id": 11,
+          "question": "Difference between Flexbox and Grid?",
+          "answer": "Flexbox is for one-dimensional layouts (row OR column), while Grid handles two dimensions (rows AND columns simultaneously). Use Flexbox for components, Grid for page layouts."
+        },
+        {
+          "id": 12,
+          "question": "What are CSS variables?",
+          "answer": "Custom properties (--var-name) defined in :root or elements, accessed via var(--var-name). Enable reusable values, theming, and JavaScript manipulation. Inherit values and have fallback options."
+        },
+        {
+          "id": 13,
+          "question": "What is BEM methodology?",
+          "answer": "Block-Element-Modifier naming convention for CSS classes. Block (component), Element (__child), Modifier (--variant). Example: .btn__icon--large. Improves readability and reduces specificity issues."
+        },
+        {
+          "id": 14,
+          "question": "How does CSS inheritance work?",
+          "answer": "Some properties (typography, color) inherit from parent to child unless overridden. Others (layout, box-model) don't inherit. Use 'inherit' keyword to force inheritance or 'initial' to reset."
+        },
+        {
+          "id": 15,
+          "question": "What are CSS pseudo-classes and pseudo-elements?",
+          "answer": "Pseudo-classes (:hover, :focus) style elements in specific states. Pseudo-elements (::before, ::first-line) style specific parts of elements. Single vs. double colon distinguishes them (CSS3 standard)."
+        },
+        {
+          "id": 16,
+          "question": "What is responsive design in CSS?",
+          "answer": "Approach making layouts adapt to different screens. Techniques: fluid grids, flexible images, media queries (@media (min-width:...)), relative units (em, rem, %), mobile-first development."
+        },
+        {
+          "id": 17,
+          "question": "Explain CSS transitions and animations.",
+          "answer": "Transitions: smooth property changes over duration (transition: property duration timing-function). Animations: @keyframes define steps, animation property applies it with timing, iteration, direction controls."
+        },
+        {
+          "id": 18,
+          "question": "What are CSS methodologies? Name some.",
+          "answer": "Scalable/maintainable CSS approaches: OOCSS (object-oriented), SMACSS (categorization), BEM (naming), ITCSS (inverted triangle), Atomic CSS (utility classes). Each organizes styles differently."
+        },
+        {
+          "id": 19,
+          "question": "How to center a div vertically and horizontally?",
+          "answer": "Modern methods: Flexbox (display:flex; justify-content:center; align-items:center), Grid (place-items:center), or transform (position:absolute; top/left:50%; transform:translate(-50%,-50%))."
+        },
+        {
+          "id": 20,
+          "question": "What is the cascade in CSS?",
+          "answer": "Order determining which styles apply when conflicts occur. Depends on: origin (user/author/browser), specificity, importance (!important), and source order (later rules override earlier ones)."
+        }
+      ]
+    },
+    {
+      "name": "Python",
+      "description": "High-level, interpreted programming language with dynamic typing and easy readability.",
+      "icon": "🐍",
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is Python? What are its key features?",
+          "answer": "Python is a high-level, interpreted, general-purpose language with dynamic typing. Key features: easy syntax, extensive libraries, cross-platform, supports multiple paradigms (OOP, functional, procedural), automatic memory management."
+        },
+        {
+          "id": 2,
+          "question": "Difference between lists and tuples?",
+          "answer": "Lists are mutable (can be modified), use square brackets [], and have more methods. Tuples are immutable (cannot be modified), use parentheses (), and are faster with fixed data."
+        },
+        {
+          "id": 3,
+          "question": "What are Python decorators?",
+          "answer": "Functions modifying other functions' behavior. Applied with @decorator syntax. They wrap functions, enabling functionality like logging, timing, or access control without modifying original code."
+        },
+        {
+          "id": 4,
+          "question": "Explain Python's GIL (Global Interpreter Lock).",
+          "answer": "GIL is a mutex allowing only one thread to execute Python bytecode at a time (even on multi-core systems). It simplifies memory management but can limit CPU-bound multi-threading performance."
+        },
+        {
+          "id": 5,
+          "question": "What are Python's magic methods?",
+          "answer": "Special methods with double underscores (__init__, __str__) that define behavior for operators or built-in functions. Example: __add__ for + operator, __len__ for len() function."
+        },
+        {
+          "id": 6,
+          "question": "Difference between __str__ and __repr__?",
+          "answer": "__str__: readable output for end-users (str()/print()). __repr__: unambiguous representation for developers (repr()), ideally should allow object recreation with eval()."
+        },
+        {
+          "id": 7,
+          "question": "How does Python manage memory?",
+          "answer": "Uses private heap managed by Python memory manager. Automatic garbage collection (reference counting + generational GC for cycles). Memory allocated dynamically, no manual management needed."
+        },
+        {
+          "id": 8,
+          "question": "What are Python generators?",
+          "answer": "Functions yielding values one at a time with 'yield', maintaining state between calls. Memory-efficient for large datasets as they generate values on-the-fly rather than storing all in memory."
+        },
+        {
+          "id": 9,
+          "question": "Explain Python's *args and **kwargs.",
+          "answer": "*args collects extra positional arguments as a tuple. **kwargs collects extra keyword arguments as a dict. Used for flexible function definitions accepting variable arguments."
+        },
+        {
+          "id": 10,
+          "question": "What are Python virtual environments?",
+          "answer": "Isolated Python environments with their own packages and Python versions (via venv or virtualenv). Prevent package conflicts between projects. Activated with source bin/activate (Unix) or Scripts\\activate (Windows)."
+        },
+        {
+          "id": 11,
+          "question": "Difference between deep and shallow copy?",
+          "answer": "Shallow copy (copy()) creates new object but references nested objects. Deep copy (deepcopy()) creates entirely new objects recursively. Changes to nested objects affect original in shallow copy but not in deep copy."
+        },
+        {
+          "id": 12,
+          "question": "What are Python context managers?",
+          "answer": "Objects managing resources with __enter__ and __exit__ methods. Used with 'with' statement to ensure proper resource cleanup (files, locks). Example: with open() as f automatically closes file."
+        },
+        {
+          "id": 13,
+          "question": "Explain Python's multiprocessing vs threading.",
+          "answer": "Threading uses threads (same memory space, limited by GIL for CPU tasks). Multiprocessing uses separate processes (own memory, bypasses GIL, better for CPU-bound tasks but heavier)."
+        },
+        {
+          "id": 14,
+          "question": "What are Python lambda functions?",
+          "answer": "Anonymous functions defined with 'lambda args: expression'. Limited to single expression. Useful for short operations passed as arguments (e.g., sorted(key=lambda x: x[1]))."
+        },
+        {
+          "id": 15,
+          "question": "How does Python handle exceptions?",
+          "answer": "Try-except blocks: try runs code, except handles exceptions, else runs if no exception, finally always executes. Raise exceptions manually. Custom exceptions by subclassing Exception."
+        },
+        {
+          "id": 16,
+          "question": "What are Python wheels?",
+          "answer": "Built-package format (.whl files) for faster installation than source distributions (.tar.gz). Contain compiled code and metadata, avoiding need for build during pip install."
+        },
+        {
+          "id": 17,
+          "question": "Explain Python's @property decorator.",
+          "answer": "Allows defining methods accessible as attributes (without ()). Enables controlled attribute access, computed properties, and validation. Can pair with @property.setter and @property.deleter."
+        },
+        {
+          "id": 18,
+          "question": "What are Python dataclasses?",
+          "answer": "Decorator (@dataclass) automatically adding special methods (__init__, __repr__) to classes primarily storing data. Reduces boilerplate code for simple classes with type hints."
+        },
+        {
+          "id": 19,
+          "question": "How to make Python code run faster?",
+          "answer": "Profile first (cProfile), use built-in functions, list comprehensions, local variables, libraries (NumPy), JIT (PyPy), C extensions (Cython), multiprocessing, avoid globals, and cache results."
+        },
+        {
+          "id": 20,
+          "question": "What is the Pythonic way?",
+          "answer": "Idiomatic Python following Zen of Python principles: readability counts, explicit over implicit, simple over complex, use built-ins, list comprehensions, context managers, and follow PEP 8 style."
+        }
+      ]
+    },
+    {
+      "name": "Java",
+      "description": "Object-oriented, class-based programming language designed for portability and reliability.",
+      "icon": "☕",
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is Java? Key features?",
+          "answer": "Java is an object-oriented, class-based, high-level language. Key features: platform independence (JVM), robustness, security, multithreading, automatic memory management (GC), rich standard library."
+        },
+        {
+          "id": 2,
+          "question": "Explain JVM, JRE, and JDK.",
+          "answer": "JVM (Java Virtual Machine) executes bytecode. JRE (Java Runtime Environment) = JVM + libraries to run programs. JDK (Java Development Kit) = JRE + compiler (javac) and tools to develop Java applications."
+        },
+        {
+          "id": 3,
+          "question": "What is bytecode in Java?",
+          "answer": "Intermediate code (.class files) generated by Java compiler from source code. Executed by JVM, enabling platform independence (Write Once, Run Anywhere). Not machine code but closer to it than source."
+        },
+        {
+          "id": 4,
+          "question": "Difference between == and .equals()?",
+          "answer": "== compares references (memory addresses). .equals() compares object content (overridden in classes like String). For primitives, == compares values."
+        },
+        {
+          "id": 5,
+          "question": "What are Java access modifiers?",
+          "answer": "Control visibility: public (anywhere), protected (same package + subclasses), default (same package only), private (same class only). Apply to classes, methods, variables."
+        },
+        {
+          "id": 6,
+          "question": "Explain OOP concepts in Java.",
+          "answer": "Encapsulation (data hiding via private fields + public methods), Inheritance (extends), Polymorphism (method overriding + overloading), Abstraction (abstract classes/interfaces)."
+        },
+        {
+          "id": 7,
+          "question": "Difference between abstract class and interface?",
+          "answer": "Abstract class: can have implemented methods, constructors, fields. Interface (pre-Java 8): only abstract methods. Now interfaces can have default/static methods but no constructors or instance fields."
+        },
+        {
+          "id": 8,
+          "question": "What is method overloading vs overriding?",
+          "answer": "Overloading: same method name, different parameters (compile-time polymorphism). Overriding: subclass redefines superclass method with same signature (runtime polymorphism)."
+        },
+        {
+          "id": 9,
+          "question": "What are Java collections? Name core interfaces.",
+          "answer": "Framework for storing/manipulating groups of objects. Core interfaces: Collection (root), List (ordered), Set (unique), Queue (FIFO), Map (key-value pairs). Implementations: ArrayList, HashSet, HashMap, etc."
+        },
+        {
+          "id": 10,
+          "question": "Explain ArrayList vs LinkedList.",
+          "answer": "ArrayList: resizable array, fast random access (O(1)), slow insertions/deletions in middle. LinkedList: doubly-linked list, slow access (O(n)), fast insertions/deletions anywhere."
+        },
+        {
+          "id": 11,
+          "question": "What is Java generics?",
+          "answer": "Feature enabling type parameterization (e.g., List<String>). Provides compile-time type safety, eliminates need for casting. Uses type erasure at runtime (generic info removed)."
+        },
+        {
+          "id": 12,
+          "question": "What is multithreading in Java?",
+          "answer": "Concurrent execution of multiple threads (lightweight processes). Created by extending Thread or implementing Runnable. Synchronized keyword and java.util.concurrent package handle thread safety."
+        },
+        {
+          "id": 13,
+          "question": "Explain Java exception hierarchy.",
+          "answer": "Throwable superclass: Error (unrecoverable, e.g., OutOfMemory) and Exception (recoverable). Checked exceptions (must be handled, e.g., IOException) vs unchecked (RuntimeException subclasses)."
+        },
+        {
+          "id": 14,
+          "question": "What is the final keyword?",
+          "answer": "final variable: constant (can't be reassigned). final method: can't be overridden. final class: can't be extended. Also used in try-catch-finally blocks."
+        },
+        {
+          "id": 15,
+          "question": "What are Java streams?",
+          "answer": "API (java.util.stream) for processing sequences of elements with functional-style operations. Supports map, filter, reduce on collections. Can be sequential or parallel."
+        },
+        {
+          "id": 16,
+          "question": "Explain Java memory model.",
+          "answer": "Heap (shared, objects live here), Stack (thread-specific, method calls/primitives), Method Area (class metadata), PC Registers, Native Method Stack. Garbage Collector manages heap memory."
+        },
+        {
+          "id": 17,
+          "question": "What is garbage collection in Java?",
+          "answer": "Automatic memory management removing unreachable objects. Types: Serial, Parallel, CMS, G1, ZGC. Calls finalize() before collection. System.gc() suggests collection but doesn't guarantee."
+        },
+        {
+          "id": 18,
+          "question": "What are Java annotations?",
+          "answer": "Metadata (@Annotation) providing info about code to compiler/runtime. Built-in: @Override, @Deprecated. Custom annotations can be created. Processed via reflection or at compile-time."
+        },
+        {
+          "id": 19,
+          "question": "Explain Java 8 features.",
+          "answer": "Lambda expressions, Stream API, Optional class, new Date/Time API, default methods in interfaces, method references (::), CompletableFuture, Nashorn JavaScript engine."
+        },
+        {
+          "id": 20,
+          "question": "What is Spring Framework?",
+          "answer": "Popular Java framework for enterprise applications. Provides DI/IoC, MVC, security, data access, etc. Key modules: Core, Boot, MVC, Data, Security. Promotes POJO-based development."
+        }
+      ]
+    },
+    {
+      "name": "JavaScript",
+      "description": "High-level, dynamic scripting language for web development and beyond.",
+      "icon": "📜",
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is JavaScript? Key features?",
+          "answer": "High-level, interpreted scripting language for web pages (now used beyond browsers). Features: dynamic typing, prototype-based OOP, first-class functions, event-driven, non-blocking I/O (Node.js)."
+        },
+        {
+          "id": 2,
+          "question": "Difference between let, const, and var?",
+          "answer": "var: function-scoped, hoisted. let/const: block-scoped, not hoisted. const requires initialization and can't be reassigned (but object properties can change). Prefer const by default, let when needed."
+        },
+        {
+          "id": 3,
+          "question": "What is hoisting in JavaScript?",
+          "answer": "Variable/function declarations moved to top of scope during compilation. var variables are hoisted (initialized as undefined), let/const are hoisted but not initialized (Temporal Dead Zone)."
+        },
+        {
+          "id": 4,
+          "question": "Explain closures in JavaScript.",
+          "answer": "Function that remembers its lexical scope even when executed outside it. Combines function + reference to outer scope. Used for data privacy, currying, event handlers, module pattern."
+        },
+        {
+          "id": 5,
+          "question": "What is the event loop?",
+          "answer": "Mechanism handling async callbacks. Continuously checks call stack and task queue. When stack is empty, moves tasks from queue to stack. Enables non-blocking behavior despite single-threaded nature."
+        },
+        {
+          "id": 6,
+          "question": "Difference between == and ===?",
+          "answer": "== performs type coercion before comparison. === (strict equality) checks type and value without coercion. Always prefer === unless explicitly needing coercion."
+        },
+        {
+          "id": 7,
+          "question": "What are promises in JavaScript?",
+          "answer": "Objects representing eventual completion/error of async operation. States: pending, fulfilled, rejected. Chainable with .then()/.catch(). Avoids callback hell. Async/await is syntactic sugar over promises."
+        },
+        {
+          "id": 8,
+          "question": "Explain async/await.",
+          "answer": "Syntax for working with promises more comfortably. async functions always return promises. await pauses execution until promise settles. try/catch handles errors. Makes async code look synchronous."
+        },
+        {
+          "id": 9,
+          "question": "What is 'this' in JavaScript?",
+          "answer": "Context object determined by how function is called: object method (object), constructor (new instance), DOM event handler (element), strict mode (undefined), or explicitly set via call/apply/bind."
+        },
+        {
+          "id": 10,
+          "question": "Explain prototypal inheritance.",
+          "answer": "Objects inherit directly from other objects via prototype chain. Each object has __proto__ linking to its prototype. Constructor functions have .prototype property. ES6 classes are syntactic sugar over this."
+        },
+        {
+          "id": 11,
+          "question": "What are arrow functions? Differences?",
+          "answer": "Compact syntax (() => {}). Differences: lexical this (inherits from surrounding scope), no arguments object, can't be constructors, no prototype property, no yield (can't be generators)."
+        },
+        {
+          "id": 12,
+          "question": "What is the DOM?",
+          "answer": "Document Object Model: tree-like representation of HTML/XML documents. JavaScript can manipulate DOM to change content/structure/styles. Events propagate through DOM (bubbling/capturing)."
+        },
+        {
+          "id": 13,
+          "question": "Explain event delegation.",
+          "answer": "Technique leveraging event bubbling: attach single event listener to parent instead of multiple to children. Uses event.target to identify actual element. Improves performance and memory usage."
+        },
+        {
+          "id": 14,
+          "question": "What is CORS?",
+          "answer": "Cross-Origin Resource Sharing: mechanism allowing restricted resources to be requested from another domain. Server must include proper headers (Access-Control-Allow-Origin). Prevents malicious cross-origin requests."
+        },
+        {
+          "id": 15,
+          "question": "What are ES6 modules?",
+          "answer": "Native JavaScript module system. Export with export/export default, import with import. Supports named imports, renaming, dynamic imports. Replaces CommonJS/AMD for browser code bundling."
+        },
+        {
+          "id": 16,
+          "question": "Explain JavaScript's execution context.",
+          "answer": "Environment where code is executed. Has variable object (scope), 'this' value, and reference to outer environment. Global context created first, function contexts created on invocation."
+        },
+        {
+          "id": 17,
+          "question": "What is memoization?",
+          "answer": "Optimization technique caching function results for same inputs. Useful for expensive computations. Implement with closure or use memoization libraries. Example: Fibonacci sequence calculation."
+        },
+        {
+          "id": 18,
+          "question": "What are Web Workers?",
+          "answer": "JavaScript running in background threads without blocking UI. Communicate with main thread via postMessage. No DOM access. Useful for CPU-intensive tasks."
+        },
+        {
+          "id": 19,
+          "question": "Explain localStorage vs sessionStorage.",
+          "answer": "Web Storage API key-value stores. localStorage persists across sessions (5MB limit). sessionStorage clears on tab close (also 5MB). Both are domain-specific and store strings only."
+        },
+        {
+          "id": 20,
+          "question": "What is TypeScript? Benefits?",
+          "answer": "Typed superset of JavaScript compiling to plain JS. Adds static types, interfaces, enums, generics. Catches errors early, improves tooling/autocomplete, makes large codebases more maintainable."
+        }
+      ]
+    },
+    {
+      "name": "DSA",
+      "description": "Data Structures and Algorithms - fundamental concepts for efficient problem solving.",
+      "icon": "🧮",
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is a data structure? Why are they important?",
+          "answer": "Data structures are ways to organize and store data for efficient access/modification. They're crucial for writing optimized algorithms, managing memory, and solving real-world computing problems efficiently."
+        },
+        {
+          "id": 2,
+          "question": "Explain time and space complexity.",
+          "answer": "Time complexity measures how runtime grows with input size (Big O notation). Space complexity measures memory usage growth. Both help analyze algorithm efficiency independent of hardware."
+        },
+        {
+          "id": 3,
+          "question": "What is Big O notation? Common examples?",
+          "answer": "Describes worst-case growth rate: O(1) constant, O(log n) logarithmic, O(n) linear, O(n²) quadratic, O(2^n) exponential. Drops constants and lower order terms (e.g., O(2n + 1) → O(n))."
+        },
+        {
+          "id": 4,
+          "question": "Difference between array and linked list?",
+          "answer": "Array: contiguous memory, fixed size, fast random access (O(1)), slow insertions/deletions. Linked list: dynamic size, non-contiguous (nodes with pointers), sequential access (O(n)), fast insertions/deletions."
+        },
+        {
+          "id": 5,
+          "question": "Explain hash tables. How do they work?",
+          "answer": "Key-value storage using hash function to map keys to array indices. Handle collisions via chaining (linked lists) or open addressing (probing). Average O(1) time for insert/delete/search."
+        },
+        {
+          "id": 6,
+          "question": "What is a binary search tree? Properties?",
+          "answer": "Tree where each node has ≤ 2 children. Left subtree contains values < parent, right > parent. Balanced BSTs provide O(log n) search/insert/delete. Degenerate trees become O(n) linked lists."
+        },
+        {
+          "id": 7,
+          "question": "Explain graph traversal algorithms.",
+          "answer": "BFS (breadth-first): level-order using queue. DFS (depth-first): explores deep using stack (or recursion). BFS finds shortest path (unweighted), DFS uses less memory."
+        },
+        {
+          "id": 8,
+          "question": "What are Dijkstra's and A* algorithms?",
+          "answer": "Dijkstra: finds shortest path in weighted graph (all directions). A*: optimized with heuristic (best-first search). Both use priority queues. A* is faster with good heuristic."
+        },
+        {
+          "id": 9,
+          "question": "Explain dynamic programming.",
+          "answer": "Solves problems by breaking into overlapping subproblems, storing solutions (memoization/tabulation) to avoid recomputation. Examples: Fibonacci, knapsack, shortest path problems."
+        },
+        {
+          "id": 10,
+          "question": "What are greedy algorithms?",
+          "answer": "Make locally optimal choices at each step hoping for global optimum. Faster but doesn't always find best solution. Examples: Dijkstra's, Huffman coding, activity selection."
+        },
+        {
+          "id": 11,
+          "question": "Explain divide and conquer.",
+          "answer": "Recursively breaks problem into smaller subproblems, solves them, combines results. Examples: merge sort, quicksort, binary search, matrix multiplication."
+        },
+        {
+          "id": 12,
+          "question": "What is a heap? Applications?",
+          "answer": "Complete binary tree where parent dominates children (min or max heap). Used in priority queues, heap sort, Dijkstra's. Insert/extract-min in O(log n)."
+        },
+        {
+          "id": 13,
+          "question": "Explain sorting algorithms tradeoffs.",
+          "answer": "Merge sort: O(n log n) stable but O(n) space. Quicksort: O(n²) worst but O(log n) space and fast average. Insertion sort: O(n²) but good for small/nearly-sorted data."
+        },
+        {
+          "id": 14,
+          "question": "What are tries? Use cases?",
+          "answer": "Tree-like structure for storing strings. Each node represents a character. O(L) search/insert (L = string length). Used in autocomplete, spell check, IP routing."
+        },
+        {
+          "id": 15,
+          "question": "Explain B-trees vs binary trees.",
+          "answer": "B-trees are multi-way (many children per node), self-balancing, optimized for disk access (used in databases). Binary trees have ≤2 children, may need balancing (AVL/red-black)."
+        },
+        {
+          "id": 16,
+          "question": "What is memoization vs tabulation?",
+          "answer": "Both DP techniques. Memoization: top-down, recursive, caches results. Tabulation: bottom-up, iterative, fills table. Memoization can be more intuitive but has recursion overhead."
+        },
+        {
+          "id": 17,
+          "question": "Explain the knapsack problem.",
+          "answer": "Given items with weights/values, maximize value without exceeding weight limit. 0-1 knapsack: items can't be divided (DP solution). Fractional: greedy works."
+        },
+        {
+          "id": 18,
+          "question": "What are topological sorts?",
+          "answer": "Linear ordering of DAG vertices where u comes before v for every edge u→v. Used in task scheduling, dependency resolution. Algorithms: Kahn's (in-degree), DFS-based."
+        },
+        {
+          "id": 19,
+          "question": "Explain union-find data structure.",
+          "answer": "Tracks disjoint sets with find (path compression) and union (by rank/size). Near-constant time per operation. Used in Kruskal's MST, connected components."
+        },
+        {
+          "id": 20,
+          "question": "What is amortized analysis?",
+          "answer": "Average time over sequence of operations (even if some are expensive). Example: dynamic array resizing (O(1) amortized insert despite occasional O(n) resize)."
+        }
+      ]
+    },
+    {
+      "name": "OS",
+      "description": "Operating Systems - software managing computer hardware and software resources.",
+      "icon": "💻",
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is an operating system? Main functions?",
+          "answer": "Software managing hardware/software resources. Functions: process management, memory management, file systems, device control, security, user interface, networking."
+        },
+        {
+          "id": 2,
+          "question": "Explain process vs thread.",
+          "answer": "Process: independent execution unit with own memory space. Thread: lightweight process within same memory space (shares code/data/files). Threads cheaper to create/switch but less isolated."
+        },
+        {
+          "id": 3,
+          "question": "What is virtual memory?",
+          "answer": "Abstraction giving each process illusion of large contiguous memory. Uses paging (fixed-size blocks) or segmentation (variable-size). Pages swapped to disk when physical memory full."
+        },
+        {
+          "id": 4,
+          "question": "Explain CPU scheduling algorithms.",
+          "answer": "FCFS (first-come), SJF (shortest job first), Round Robin (time slices), Priority, Multilevel queues. Goals: fairness, throughput, response time, turnaround time, avoiding starvation."
+        },
+        {
+          "id": 5,
+          "question": "What is a deadlock? Conditions?",
+          "answer": "When processes wait indefinitely for resources held by others. Conditions: mutual exclusion, hold and wait, no preemption, circular wait. Prevention breaks one condition."
+        },
+        {
+          "id": 6,
+          "question": "Explain process synchronization.",
+          "answer": "Coordinating access to shared resources to avoid race conditions. Tools: mutexes, semaphores, monitors, atomic operations. Critical sections protect shared data access."
+        },
+        {
+          "id": 7,
+          "question": "What is a semaphore? Types?",
+          "answer": "Synchronization variable controlling access via wait()/signal(). Counting semaphore: any integer value. Binary semaphore (mutex): only 0 or 1."
+        },
+        {
+          "id": 8,
+          "question": "Explain paging and segmentation.",
+          "answer": "Paging: fixed-size blocks (pages/frames), avoids external fragmentation. Segmentation: variable-size blocks matching logical units, allows sharing/protection but may fragment."
+        },
+        {
+          "id": 9,
+          "question": "What is thrashing?",
+          "answer": "When system spends more time handling page faults than executing processes. Caused by over-allocating memory or insufficient RAM. Solutions: better page replacement, working set model."
+        },
+        {
+          "id": 10,
+          "question": "Explain file system concepts.",
+          "answer": "Organizes data on storage. Components: files (data units), directories (organization), metadata (permissions, timestamps). May use allocation methods (contiguous, linked, indexed)."
+        },
+        {
+          "id": 11,
+          "question": "What is RAID? Levels?",
+          "answer": "Redundant Array of Independent Disks. RAID 0 (striping, no redundancy), 1 (mirroring), 5 (striping with parity), 10 (mirroring+striping). Balances performance, capacity, fault tolerance."
+        },
+        {
+          "id": 12,
+          "question": "Explain IPC mechanisms.",
+          "answer": "Inter-Process Communication: shared memory (fastest), message passing (pipes, sockets), signals, semaphores. Choice depends on performance needs and process locations (same machine/distributed)."
+        },
+        {
+          "id": 13,
+          "question": "What is a system call? Examples?",
+          "answer": "Programmatic way process requests kernel services. Examples: read/write files (open/close), process control (fork/exec), device manipulation (ioctl), communication (pipe/socket)."
+        },
+        {
+          "id": 14,
+          "question": "Explain memory hierarchy.",
+          "answer": "Tradeoff between speed, size, cost: registers → cache (L1/L2/L3) → main memory (RAM) → disk storage → tape. Higher levels are faster, smaller, more expensive per byte."
+        },
+        {
+          "id": 15,
+          "question": "What is cache memory? Types?",
+          "answer": "Fast memory between CPU and RAM. L1 (inside CPU, fastest), L2 (often shared), L3 (shared across cores). Uses locality principles (temporal/spatial). Mapping: direct, associative, set-associative."
+        },
+        {
+          "id": 16,
+          "question": "Explain disk scheduling algorithms.",
+          "answer": "FCFS, SSTF (shortest seek time first), SCAN (elevator), C-SCAN (circular), LOOK, C-LOOK. Goal: minimize seek time and rotational latency while ensuring fairness."
+        },
+        {
+          "id": 17,
+          "question": "What is a kernel? Types?",
+          "answer": "Core OS component managing resources. Monolithic (all in kernel space), microkernel (minimal in kernel, rest in user space), hybrid (Linux: monolithic with modules)."
+        },
+        {
+          "id": 18,
+          "question": "Explain process states.",
+          "answer": "New → Ready → Running → (Waiting if I/O) → Terminated. Schedulers: long-term (admission), short-term (CPU), medium-term (swapping). Context switch saves/restores process state."
+        },
+        {
+          "id": 19,
+          "question": "What is a page replacement algorithm?",
+          "answer": "Decides which page to evict when new page needed. FIFO, LRU (least recently used), Clock (approximation of LRU), Optimal (theoretical). LRU commonly used but hard to implement perfectly."
+        },
+        {
+          "id": 20,
+          "question": "Explain distributed systems challenges.",
+          "answer": "Concurrency, partial failures, latency, security, heterogeneity, transparency (access/location/migration). CAP theorem: can't guarantee all of Consistency, Availability, Partition tolerance."
+        }
+      ]
+    },
+    {
+      "name": "Frontend",
+      "description": "Client-side web development focusing on user interfaces and experiences.",
+      "icon": "🖥️",
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is frontend development? Key technologies?",
+          "answer": "Creating user interfaces and experiences. Core: HTML (structure), CSS (styling), JavaScript (behavior). Frameworks: React, Angular, Vue. Tools: npm, webpack, Babel, Sass."
+        },
+        {
+          "id": 2,
+          "question": "Explain responsive design principles.",
+          "answer": "Fluid grids (relative units), flexible images (max-width:100%), media queries (@media), mobile-first approach. Frameworks like Bootstrap help but understanding CSS fundamentals is key."
+        },
+        {
+          "id": 3,
+          "question": "What is Single Page Application (SPA)?",
+          "answer": "Web app loading single HTML page, dynamically updating content via JavaScript. Avoids full page reloads. Routing handled client-side. Examples: Gmail, Facebook. Benefits: faster UX, more app-like."
+        },
+        {
+          "id": 4,
+          "question": "Explain CSS Grid vs Flexbox usage.",
+          "answer": "Grid: 2D layouts (rows AND columns). Flexbox: 1D (row OR column). Use Grid for overall page layout, Flexbox for components. They complement each other well."
+        },
+        {
+          "id": 5,
+          "question": "What is Web Accessibility (a11y)? Techniques?",
+          "answer": "Making websites usable by people with disabilities. Techniques: semantic HTML, ARIA attributes, keyboard navigation, color contrast, alt text, focus management, screen reader testing."
+        },
+        {
+          "id": 6,
+          "question": "Explain the Critical Rendering Path.",
+          "answer": "Steps browser takes to render page: DOM (HTML) → CSSOM (CSS) → Render Tree → Layout → Paint → Composite. Optimize by minimizing render-blocking resources, deferring non-critical JS/CSS."
+        },
+        {
+          "id": 7,
+          "question": "What are Progressive Web Apps (PWAs)?",
+          "answer": "Web apps with native app-like features: offline work (Service Workers), installable, push notifications, fast loading. Benefits: no app store, smaller size, auto-updating."
+        },
+        {
+          "id": 8,
+          "question": "Explain CSS preprocessors benefits.",
+          "answer": "Sass/Less add variables, nesting, mixins, functions, imports. Improve maintainability, reduce repetition. Compiled to standard CSS. Modern CSS has many features reducing need for preprocessors."
+        },
+        {
+          "id": 9,
+          "question": "What is Cross-Browser Compatibility?",
+          "answer": "Ensuring websites work across different browsers/devices. Techniques: feature detection (Modernizr), polyfills, vendor prefixes, progressive enhancement, regular testing on multiple browsers."
+        },
+        {
+          "id": 10,
+          "question": "Explain client-side storage options.",
+          "answer": "Cookies (small, sent with requests), Web Storage (localStorage/sessionStorage, 5MB), IndexedDB (structured, large amounts), Cache API (for assets). Choose based on data size and access needs."
+        },
+        {
+          "id": 11,
+          "question": "What is JAMstack? Benefits?",
+          "answer": "JavaScript, APIs, Markup. Architecture decoupling frontend from backend: pre-rendered static sites + dynamic functionality via APIs. Benefits: performance, security, scalability, developer experience."
+        },
+        {
+          "id": 12,
+          "question": "Explain CSS-in-JS approach.",
+          "answer": "Writing CSS in JavaScript (e.g., styled-components, Emotion). Benefits: scoped styles, dynamic styling, dead code elimination. Drawbacks: runtime cost, learning curve, tooling complexity."
+        },
+        {
+          "id": 13,
+          "question": "What are Web Components?",
+          "answer": "Suite of technologies for reusable custom elements: Custom Elements (define new HTML tags), Shadow DOM (encapsulated styles/markup), HTML Templates (<template> slot). Framework-agnostic."
+        },
+        {
+          "id": 14,
+          "question": "Explain frontend build tools.",
+          "answer": "Webpack (module bundler), Babel (JavaScript compiler), ESLint (code quality), Prettier (formatting), npm/yarn (package managers). Automate tasks like transpiling, bundling, minifying, linting."
+        },
+        {
+          "id": 15,
+          "question": "What is Server-Side Rendering (SSR)? Benefits?",
+          "answer": "Generating HTML on server for faster initial load, better SEO. Hydration attaches event handlers client-side. Frameworks: Next.js (React), Nuxt (Vue). Tradeoff: more server load vs better performance."
+        },
+        {
+          "id": 16,
+          "question": "Explain state management in frontend apps.",
+          "answer": "Managing application state: React (Context API, Redux, Zustand), Angular (Services, NgRx), Vue (Vuex, Pinia). Choose based on app complexity. For small apps, component state may suffice."
+        },
+        {
+          "id": 17,
+          "question": "What are micro frontends?",
+          "answer": "Architecture splitting frontend into semi-independent microapps (by feature/team). Benefits: independent deployment, technology diversity, scalability. Challenges: consistency, bundle size, integration."
+        },
+        {
+          "id": 18,
+          "question": "Explain Web Performance Optimization.",
+          "answer": "Techniques: code splitting, lazy loading, image optimization, CDN, caching, minimizing render-blocking resources, efficient animations (will-change), PRPL pattern. Measure with Lighthouse."
+        },
+        {
+          "id": 19,
+          "question": "What is Design System? Benefits?",
+          "answer": "Collection of reusable components guided by standards. Includes UI kit, style guide, patterns. Benefits: consistency, faster development, better collaboration between designers/devs."
+        },
+        {
+          "id": 20,
+          "question": "Explain frontend testing strategies.",
+          "answer": "Unit tests (Jest): individual functions/components. Integration: component interactions. E2E (Cypress): user flows. Visual regression: detect UI changes. Accessibility: axe-core. Mock APIs (MSW)."
+        }
+      ]
+    },
+    {
+      "name": "Backend",
+      "description": "Server-side development focusing on databases, APIs, and application logic.",
+      "icon": "⚙️",
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is backend development? Key components?",
+          "answer": "Server-side logic powering web applications. Components: server, database, APIs, authentication, business logic. Languages: Java, Python, Node.js, C#, PHP. Frameworks: Spring, Django, Express, .NET."
+        },
+        {
+          "id": 2,
+          "question": "Explain REST API principles.",
+          "answer": "Representational State Transfer: stateless, cacheable, uniform interface (resources identified in requests), layered system. Uses HTTP methods (GET/POST/PUT/DELETE) and status codes properly."
+        },
+        {
+          "id": 3,
+          "question": "What is GraphQL? Advantages?",
+          "answer": "Query language for APIs allowing clients to request exactly what they need. Benefits: reduced over-fetching, single endpoint, strong typing. Tradeoffs: caching complexity, potential over-fetching by clients."
+        },
+        {
+          "id": 4,
+          "question": "Explain microservices architecture.",
+          "answer": "Small, independent services communicating via APIs. Each handles specific business capability. Benefits: scalability, technology diversity, independent deployment. Challenges: distributed complexity, monitoring."
+        },
+        {
+          "id": 5,
+          "question": "What is containerization? Docker?",
+          "answer": "Packaging app with dependencies into isolated units. Docker provides lightweight containers sharing host OS kernel. Benefits: consistency, portability, efficiency compared to VMs."
+        },
+        {
+          "id": 6,
+          "question": "Explain load balancing techniques.",
+          "answer": "Distributing traffic across servers to improve responsiveness/availability. Algorithms: round-robin, least connections, IP hash. Can be hardware (F5) or software (NGINX, HAProxy)."
+        },
+        {
+          "id": 7,
+          "question": "What is database indexing? How does it work?",
+          "answer": "Data structure improving query speed (like book index). B-trees commonly used. Speeds up SELECT but slows INSERT/UPDATE (index maintenance). Clustered (data reordered) vs non-clustered (separate structure)."
+        },
+        {
+          "id": 8,
+          "question": "Explain ACID properties in databases.",
+          "answer": "Atomicity (all or nothing), Consistency (valid state transitions), Isolation (concurrent transactions don't interfere), Durability (committed transactions persist). RDBMS guarantee ACID; NoSQL often sacrifices some."
+        },
+        {
+          "id": 9,
+          "question": "What is caching? Strategies?",
+          "answer": "Storing frequently accessed data in fast storage. Strategies: Cache-aside (lazy loading), Write-through (write to cache+DB), Write-behind (write to cache, later to DB), Time-to-live (TTL) expiration."
+        },
+        {
+          "id": 10,
+          "question": "Explain CAP theorem.",
+          "answer": "Distributed systems can't simultaneously guarantee all three: Consistency (all nodes see same data), Availability (every request gets response), Partition tolerance (system works despite network failures). Choose 2."
+        },
+        {
+          "id": 11,
+          "question": "What is OAuth? How does it work?",
+          "answer": "Authorization framework allowing limited access without sharing credentials. Roles: Resource Owner, Client, Authorization Server, Resource Server. Flow: redirect to auth provider, get token, access resources."
+        },
+        {
+          "id": 12,
+          "question": "Explain SQL vs NoSQL databases.",
+          "answer": "SQL (MySQL, PostgreSQL): structured, relational, ACID, vertical scaling. NoSQL (MongoDB, Cassandra): flexible schema, horizontal scaling, BASE model. Choose based on data structure and scaling needs."
+        },
+        {
+          "id": 13,
+          "question": "What is message queuing? Use cases?",
+          "answer": "Asynchronous service-to-service communication. Producers send messages to queue, consumers process them. Use cases: decoupling, buffering, async processing. Systems: RabbitMQ, Kafka, AWS SQS."
+        },
+        {
+          "id": 14,
+          "question": "Explain database sharding.",
+          "answer": "Horizontal partitioning: splitting data across multiple databases based on shard key (e.g., user region). Benefits: scalability, performance. Challenges: complex queries, cross-shard transactions."
+        },
+        {
+          "id": 15,
+          "question": "What is CI/CD? Benefits?",
+          "answer": "Continuous Integration (merge code changes frequently with automated testing). Continuous Delivery/Deployment (automatically deploy to production). Benefits: faster releases, fewer bugs, better collaboration."
+        },
+        {
+          "id": 16,
+          "question": "Explain WebSockets.",
+          "answer": "Protocol providing full-duplex communication over single TCP connection. Persistent connection unlike HTTP. Used for real-time apps (chat, gaming, live updates). Libraries: Socket.IO, ws."
+        },
+        {
+          "id": 17,
+          "question": "What is serverless architecture?",
+          "answer": "Running code without managing servers (e.g., AWS Lambda). Event-driven, scales automatically, pay-per-use. Benefits: no infrastructure management, auto-scaling. Drawbacks: cold starts, vendor lock-in."
+        },
+        {
+          "id": 18,
+          "question": "Explain database replication.",
+          "answer": "Maintaining multiple copies of data for availability/performance. Master-slave: writes to master, reads from slaves. Multi-master: writes to any. Synchronous vs asynchronous. Use cases: failover, read scaling."
+        },
+        {
+          "id": 19,
+          "question": "What is API gateway? Benefits?",
+          "answer": "Single entry point managing API requests. Features: routing, composition, protocol translation, caching, security (rate limiting, auth). Examples: Kong, AWS API Gateway, Apigee."
+        },
+        {
+          "id": 20,
+          "question": "Explain 12-factor app methodology.",
+          "answer": "Best practices for cloud-native apps: codebase, dependencies, config, backing services, build/release/run, processes, port binding, concurrency, disposability, dev/prod parity, logs, admin processes."
+        }
+      ]
+    },
+    {
+      "name": "Machine Learning",
+      "description": "Field of AI enabling systems to learn from data without explicit programming.",
+      "icon": "🤖",
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is machine learning? Types?",
+          "answer": "Field where systems learn from data without explicit programming. Types: Supervised (labeled data), Unsupervised (find patterns), Reinforcement (reward-based), Semi-supervised (mix), Self-supervised (auto-generated labels)."
+        },
+        {
+          "id": 2,
+          "question": "Explain bias-variance tradeoff.",
+          "answer": "Bias: error from oversimplifying model. Variance: error from overfitting to training data. High bias underfits; high variance overfits. Goal: balance minimizing both through regularization, cross-validation."
+        },
+        {
+          "id": 3,
+          "question": "What is overfitting? How to prevent it?",
+          "answer": "Model memorizes training data but fails on new data. Prevention: more training data, regularization (L1/L2), dropout (NNs), early stopping, feature reduction, cross-validation, ensemble methods."
+        },
+        {
+          "id": 4,
+          "question": "Explain cross-validation techniques.",
+          "answer": "K-fold: split data into k parts, train on k-1, validate on 1, repeat k times. Stratified: preserves class ratios. Leave-one-out: extreme k-fold (k=n). Time-series: forward chaining. Prevents data leakage."
+        },
+        {
+          "id": 5,
+          "question": "What are evaluation metrics for classification?",
+          "answer": "Accuracy, Precision (TP/(TP+FP)), Recall (TP/(TP+FN)), F1 (harmonic mean), ROC-AUC, PR-AUC, Log Loss. Choose based on class balance and cost of false positives/negatives."
+        },
+        {
+          "id": 6,
+          "question": "Explain gradient descent variants.",
+          "answer": "Batch: uses full dataset (accurate but slow). Stochastic: single random sample (fast but noisy). Mini-batch: compromise (common in practice). Optimizers: Momentum, RMSprop, Adam adapt learning rates."
+        },
+        {
+          "id": 7,
+          "question": "What is regularization? Types?",
+          "answer": "Prevents overfitting by penalizing complexity. L1 (Lasso: sparse models), L2 (Ridge: small weights), ElasticNet (both), Dropout (random deactivation in NNs), Early stopping (halt training)."
+        },
+        {
+          "id": 8,
+          "question": "Explain ensemble methods.",
+          "answer": "Combine multiple models to improve performance. Bagging (parallel, reduces variance: Random Forest), Boosting (sequential, reduces bias: AdaBoost, XGBoost), Stacking (meta-model learns to combine)."
+        },
+        {
+          "id": 9,
+          "question": "What is feature engineering? Techniques?",
+          "answer": "Creating/selecting meaningful features. Techniques: imputation, encoding (one-hot, target), scaling (normalization/standardization), binning, polynomial features, PCA, domain-specific transformations."
+        },
+        {
+          "id": 10,
+          "question": "Explain neural network architecture.",
+          "answer": "Input layer → hidden layers (activation functions) → output layer. Forward pass computes predictions, backward pass updates weights via gradient descent. Deep networks have many hidden layers."
+        },
+        {
+          "id": 11,
+          "question": "What is transfer learning?",
+          "answer": "Using knowledge from pre-trained model on new task. Common in deep learning (ImageNet CNNs for other vision tasks). Fine-tuning adjusts some layers. Saves computation and data requirements."
+        },
+        {
+          "id": 12,
+          "question": "Explain CNN architecture.",
+          "answer": "Convolutional Neural Networks for grid-like data (images). Layers: Conv (feature detection), Pooling (downsampling), Flatten, Dense (classification). Uses shared weights, spatial hierarchies."
+        },
+        {
+          "id": 13,
+          "question": "What is RNN? Limitations?",
+          "answer": "Recurrent Neural Networks for sequences (text, time series). Maintains hidden state across time steps. Limitations: vanishing gradients, parallelization difficulty. LSTMs/GRUs address some issues."
+        },
+        {
+          "id": 14,
+          "question": "Explain attention mechanism.",
+          "answer": "Neural network dynamically focusing on relevant parts of input (like human attention). Key component in Transformers. Computes attention scores between elements (e.g., words in sentence)."
+        },
+        {
+          "id": 15,
+          "question": "What is unsupervised learning? Algorithms?",
+          "answer": "Finding patterns in unlabeled data. Clustering (k-means, hierarchical), Dimensionality Reduction (PCA, t-SNE), Anomaly Detection (isolation forest), Association Rules (Apriori)."
+        },
+        {
+          "id": 16,
+          "question": "Explain hyperparameter tuning methods.",
+          "answer": "Grid search (exhaustive), Random search (efficient), Bayesian optimization (models performance), Evolutionary algorithms. Use cross-validation to evaluate combinations."
+        },
+        {
+          "id": 17,
+          "question": "What is reinforcement learning? Components?",
+          "answer": "Agent learns by interacting with environment to maximize reward. Components: agent, environment, actions, states, rewards, policy (behavior strategy). Algorithms: Q-learning, Policy Gradients, DQN."
+        },
+        {
+          "id": 18,
+          "question": "Explain word embeddings.",
+          "answer": "Dense vector representations of words capturing semantic meaning. Word2Vec (predictive), GloVe (count-based), FastText (subword). Contextual embeddings (BERT) consider surrounding words."
+        },
+        {
+          "id": 19,
+          "question": "What is data leakage? How to prevent?",
+          "answer": "When information from outside training data influences model. Causes: preprocessing before train-test split, time-series future data, target leakage. Prevention: proper splitting, pipeline design."
+        },
+        {
+          "id": 20,
+          "question": "Explain ethical considerations in ML.",
+          "answer": "Bias/fairness (dataset representativeness), privacy (GDPR, anonymization), transparency (explainability), accountability, societal impact. Techniques: fairness metrics, adversarial debiasing, interpretability tools."
+        }
+      ]
+    },
+    {
+      "name": "Deep Learning",
+      "description": "Subset of machine learning using neural networks with multiple layers.",
+      "icon": "🧠",
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is deep learning? How differs from ML?",
+          "answer": "Subset of ML using neural networks with multiple layers. Automatically learns hierarchical feature representations from raw data. Excels with large datasets, unstructured data (images, text)."
+        },
+        {
+          "id": 2,
+          "question": "Explain backpropagation algorithm.",
+          "answer": "Calculates gradients for neural network weight updates. Forward pass computes predictions, backward pass applies chain rule to propagate error gradients from output back through network layers."
+        },
+        {
+          "id": 3,
+          "question": "What are activation functions? Examples?",
+          "answer": "Non-linear functions applied to neuron outputs. ReLU (common, avoids vanishing gradient), Sigmoid (0-1, for probabilities), Tanh (-1 to 1), Leaky ReLU (fixes dying ReLU), Softmax (multi-class output)."
+        },
+        {
+          "id": 4,
+          "question": "Explain vanishing/exploding gradients.",
+          "answer": "Vanishing: gradients become extremely small in deep networks (saturating activations like sigmoid). Exploding: gradients grow exponentially (unstable training). Solutions: ReLU, batch norm, careful initialization."
+        },
+        {
+          "id": 5,
+          "question": "What is batch normalization? Benefits?",
+          "answer": "Normalizes layer inputs by adjusting/scaling activations. Benefits: faster training, higher learning rates, reduces overfitting, less sensitive to initialization. Usually inserted after FC/conv layers, before activation."
+        },
+        {
+          "id": 6,
+          "question": "Explain dropout regularization.",
+          "answer": "Randomly deactivating neurons during training (with probability p). Prevents co-adaptation, acts as ensemble method. Disabled during inference (weights scaled by p). Common in fully connected layers."
+        },
+        {
+          "id": 7,
+          "question": "What are autoencoders? Applications?",
+          "answer": "Neural networks compressing input to latent space then reconstructing. Applications: dimensionality reduction, anomaly detection, denoising, feature learning. Variational AEs generate new samples."
+        },
+        {
+          "id": 8,
+          "question": "Explain CNN architectures beyond basics.",
+          "answer": "ResNet (residual connections enable very deep networks), Inception (multiple filter sizes), EfficientNet (scaling dimensions), DenseNet (all layers connected), MobileNet (lightweight for mobile)."
+        },
+        {
+          "id": 9,
+          "question": "What are GANs? How do they work?",
+          "answer": "Generative Adversarial Networks: generator creates fake data, discriminator tries to detect fakes. Trained adversarially until generator produces realistic samples. Applications: image generation, super-resolution."
+        },
+        {
+          "id": 10,
+          "question": "Explain transformer architecture.",
+          "answer": "Self-attention mechanism processes all input positions simultaneously (no RNN). Components: multi-head attention, positional encoding, feed-forward layers, layer normalization. Basis for models like BERT, GPT."
+        },
+        {
+          "id": 11,
+          "question": "What is transfer learning in deep learning?",
+          "answer": "Using pre-trained models (on large datasets like ImageNet) as starting point. Fine-tuning adjusts some layers for new task. Saves computation, works well with limited task-specific data."
+        },
+        {
+          "id": 12,
+          "question": "Explain attention mechanisms in detail.",
+          "answer": "Computes dynamic weights indicating input importance. Query, Key, Value vectors. Scaled dot-product attention: softmax(QK^T/√d)V. Multi-head attention runs multiple in parallel for different representations."
+        },
+        {
+          "id": 13,
+          "question": "What are pretrained language models? Examples?",
+          "answer": "Large neural nets pretrained on vast text corpora. Examples: BERT (bidirectional), GPT (autoregressive), T5 (text-to-text), RoBERTa. Fine-tuned for downstream NLP tasks with limited labeled data."
+        },
+        {
+          "id": 14,
+          "question": "Explain sequence-to-sequence models.",
+          "answer": "Encoder processes input sequence, decoder generates output sequence. Originally RNN-based with attention, now often Transformers. Applications: machine translation, summarization, dialogue systems."
+        },
+        {
+          "id": 15,
+          "question": "What is reinforcement learning in deep learning?",
+          "answer": "Deep RL combines neural networks with RL. Policy networks directly output actions, value networks estimate future rewards. Examples: DQN (Q-learning with NNs), PPO, AlphaGo's policy/value networks."
+        },
+        {
+          "id": 16,
+          "question": "Explain neural network weight initialization.",
+          "answer": "Critical for training deep networks. Xavier/Glorot: scales based on layer sizes. He initialization: for ReLU networks. Orthogonal: preserves gradient magnitudes. Avoid all zeros or large initial values."
+        },
+        {
+          "id": 17,
+          "question": "What are graph neural networks?",
+          "answer": "Neural networks operating on graph-structured data. Aggregate information from node neighborhoods. Types: GCN (graph convolutional), GAT (attention-based). Applications: social networks, molecules, recommendation."
+        },
+        {
+          "id": 18,
+          "question": "Explain contrastive learning.",
+          "answer": "Self-supervised approach learning by contrasting similar vs dissimilar examples. Positive pairs (augmented views of same instance), negatives (different instances). Loss minimizes distance for positives, maximizes for negatives."
+        },
+        {
+          "id": 19,
+          "question": "What are diffusion models?",
+          "answer": "Generative models gradually adding then reversing noise. Forward process: slowly corrupt data. Reverse process: neural net learns to denoise. Achieves high-quality image generation (surpassing GANs in some cases)."
+        },
+        {
+          "id": 20,
+          "question": "Explain federated learning.",
+          "answer": "Decentralized training across multiple devices/servers without sharing raw data. Local models trained on device data, only model updates aggregated centrally. Benefits: privacy, reduced communication costs."
+        }
+      ]
+    },
+    {
+      "name": "DBMS",
+      "description": "Database Management Systems - software for storing, retrieving, and managing data.",
+      "icon": "🗃️",
+      "questions": [
+        {
+          "id": 1,
+          "question": "What is a DBMS? Components?",
+          "answer": "Database Management System: software for storing/retrieving data efficiently. Components: storage engine, query processor, transaction manager, catalog (metadata), utilities. Examples: MySQL, PostgreSQL, Oracle."
+        },
+        {
+          "id": 2,
+          "question": "Explain ACID properties.",
+          "answer": "Atomicity: transactions are all-or-nothing. Consistency: valid state transitions. Isolation: concurrent transactions don't interfere. Durability: committed transactions persist after crashes. RDBMS guarantee these."
+        },
+        {
+          "id": 3,
+          "question": "What is normalization? Forms?",
+          "answer": "Organizing data to minimize redundancy. 1NF: atomic values. 2NF: no partial dependencies. 3NF: no transitive dependencies. BCNF: stricter 3NF. Higher forms: 4NF (no multi-valued), 5NF (join-projection)."
+        },
+        {
+          "id": 4,
+          "question": "Explain indexing in databases.",
+          "answer": "Data structure improving query speed. B-trees common for range queries. Hash indexes for equality. Clustered: data stored in index order. Covering index contains all needed fields. Tradeoff: faster reads vs slower writes."
+        },
+        {
+          "id": 5,
+          "question": "What are database transactions? Properties?",
+          "answer": "Sequence of operations treated as single unit. Properties (ACID): Atomic, Consistent, Isolated, Durable. Begin with BEGIN, end with COMMIT (save) or ROLLBACK (undo)."
+        },
+        {
+          "id": 6,
+          "question": "Explain SQL joins types.",
+          "answer": "INNER: matching rows. LEFT: all left + matching right. RIGHT: all right + matching left. FULL: all from both. CROSS: cartesian product. Self-join: table joined with itself."
+        },
+        {
+          "id": 7,
+          "question": "What is a stored procedure? Benefits?",
+          "answer": "Precompiled SQL code stored in DB. Benefits: performance (less network traffic), security (direct table access control), reusability. Drawbacks: harder to debug, vendor-specific, may complicate application logic."
+        },
+        {
+          "id": 8,
+          "question": "Explain database triggers.",
+          "answer": "Automated procedures executing before/after specific events (INSERT, UPDATE, DELETE). Uses: audit logging, data validation, maintaining derived data. Can be row-level or statement-level."
+        },
+        {
+          "id": 9,
+          "question": "What is NoSQL? Types?",
+          "answer": "Non-relational databases for flexible schemas and scaling. Types: Document (MongoDB), Key-Value (Redis), Column-family (Cassandra), Graph (Neo4j). Sacrifice some ACID properties for flexibility/performance."
+        },
+        {
+          "id": 10,
+          "question": "Explain CAP theorem.",
+          "answer": "Distributed systems can't simultaneously guarantee all three: Consistency (all nodes see same data), Availability (every request gets response), Partition tolerance (system works despite network failures). Choose 2."
+        },
+        {
+          "id": 11,
+          "question": "What is database sharding?",
+          "answer": "Horizontal partitioning: splitting data across multiple machines based on shard key (e.g., user region). Benefits: scalability, performance. Challenges: complex queries, cross-shard transactions, rebalancing."
+        },
+        {
+          "id": 12,
+          "question": "Explain database replication.",
+          "answer": "Maintaining multiple copies of data for availability/performance. Master-slave: writes to master, reads from slaves. Multi-master: writes to any. Synchronous vs asynchronous. Use cases: failover, read scaling."
+        },
+        {
+          "id": 13,
+          "question": "What is a deadlock? How to handle?",
+          "answer": "When transactions wait indefinitely for resources held by others. Prevention: acquire locks in consistent order. Detection: wait-for graphs. Resolution: abort one transaction. DBMS typically handle automatically."
+        },
+        {
+          "id": 14,
+          "question": "Explain isolation levels in SQL.",
+          "answer": "READ UNCOMMITTED: dirty reads. READ COMMITTED: no dirty reads. REPEATABLE READ: no phantom reads in some DBs. SERIALIZABLE: strictest, no concurrency anomalies. Higher isolation reduces anomalies but increases locking."
+        },
+        {
+          "id": 15,
+          "question": "What is a foreign key? Purpose?",
+          "answer": "Column(s) linking to primary key in another table. Enforces referential integrity, ensures valid relationships between tables. Can be ON DELETE CASCADE/SET NULL for automatic updates."
+        },
+        {
+          "id": 16,
+          "question": "Explain data warehousing concepts.",
+          "answer": "Centralized repository for analytical data. ETL (Extract, Transform, Load) process populates it. OLAP (Online Analytical Processing) for complex queries. Star/Snowflake schemas for organizing data."
+        },
+        {
+          "id": 17,
+          "question": "What is a view in SQL?",
+          "answer": "Virtual table based on SQL query. Simplifies complex queries, provides security (restricts access), can be indexed (materialized view). Changes to underlying tables reflect in views."
+        },
+        {
+          "id": 18,
+          "question": "Explain database normalization vs denormalization.",
+          "answer": "Normalization: organizing data to reduce redundancy (1NF, 2NF, 3NF). Denormalization: combining tables for performance (fewer joins). Tradeoff: normalization improves consistency, denormalization improves read performance."
+        },
+        {
+          "id": 19,
+          "question": "What is a composite key?",
+          "answer": "Primary key consisting of multiple columns. Uniquely identifies rows based on combination of values. Useful when no single column is unique enough."
+        },
+        {
+          "id": 20,
+          "question": "Explain the difference between clustered and non-clustered indexes.",
+          "answer": "Clustered index: data stored in index order (only one per table). Non-clustered: separate structure with pointers to data rows (multiple allowed). Clustered indexes improve range queries, non-clustered improve lookups."
+        }
+    ]
+    }
+]
+}

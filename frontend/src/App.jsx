@@ -10,13 +10,17 @@ import Profile from './components/Profile';
 import HomePage from './components/HomePage'; // Make sure this path is correct
 import Dashboard from "./components/Dashboard";
 import InterviewSetup from "./components/InterviewSetup";
+import Questions from "./components/Questions";
 import Results from "./components/Results";
+import Stack from './components/Stack';
 function App() {
   return (
     <Routes>
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path='/stacks' element={<Stack />} />
+      <Route path="/stack/:name" element={<Questions />} />
 
       {/* Protected Routes */}
       <Route
