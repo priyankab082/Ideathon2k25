@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import data from "../assets/stack.json";
-
+import Header from "../priyanka/components/Header";
+import Footer from "../priyanka/components/Footer";
 const Stack = () => {
   const [loading, setLoading] = useState(true);
 
@@ -20,6 +21,8 @@ const Stack = () => {
   }
 
   return (
+    <div>
+      <Header />
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-100 py-10 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -27,6 +30,7 @@ const Stack = () => {
           <h1 className="text-4xl md:text-5xl font-extrabold text-blue-700 mb-4 tracking-tight">
             🚀 Tech Stacks
           </h1>
+
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Choose a stack to explore interview questions and level up your prep.
           </p>
@@ -81,6 +85,8 @@ const Stack = () => {
           <p>✨ Click on any stack to dive into interview questions.</p>
         </div>
       </div>
+    </div>
+    <Footer />
     </div>
   );
 };

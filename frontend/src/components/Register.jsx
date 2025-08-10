@@ -3,7 +3,8 @@ import Lottie from 'lottie-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import loginanimation from '../assets/loginanimation.json';
-
+import Header from "../priyanka/components/Header";
+import Footer from "../priyanka/components/Footer";
 // React Icons
 import { FaUser, FaLock, FaPhone } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
@@ -37,6 +38,8 @@ const Register = () => {
   };
 
   return (
+    <div>
+      <Header />
     <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-white">
       {/* Left Side - Lottie Animation */}
       <div className="hidden md:flex w-1/2 items-center justify-center p-12">
@@ -49,6 +52,7 @@ const Register = () => {
       <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12">
         <div className="w-full max-w-md bg-white/80 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 p-8 transition-all duration-300">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Create an Account</h2>
+
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Name */}
@@ -136,6 +140,8 @@ const Register = () => {
         </div>
       </div>
     </div>
+    <Footer />
+                  </div>
   );
 };
 

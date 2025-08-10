@@ -7,19 +7,20 @@ import ErrorBoundary from './components/ErrorBoundary';
 import Login from './components/Login';
 import Register from './components/Register';
 import Profile from './components/Profile';
-import HomePage from './components/HomePage'; // Make sure this path is correct
-import Dashboard from "./components/Dashboard";
+import HomePage from './priyanka/pages/Home'; // Make sure this path is correct
+import Dashboard from "./priyanka/pages/Dashboard";
 import InterviewSetup from "./components/InterviewSetup";
 import Questions from "./components/Questions";
 import Results from "./components/Results";
 import Stack from './components/Stack';
+import SearchComponent from './components/Google/SearchComponent';
 function App() {
   return (
     <Routes>
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path='/stacks' element={<Stack />} />
+      {/* <Route path='/stacks' element={<Stack />} /> */}
       <Route path="/stack/:name" element={<Questions />} />
 
       {/* Protected Routes */}
@@ -42,11 +43,31 @@ function App() {
         }
       />
       <Route
+        path="/stack"
+        element={
+          <ProtectedRoute>
+            <ErrorBoundary>
+              <Stack />
+            </ErrorBoundary>
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/profile"
         element={
           <ProtectedRoute>
             <ErrorBoundary>
               <Profile />
+            </ErrorBoundary>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/search"
+        element={
+          <ProtectedRoute>
+            <ErrorBoundary>
+              <SearchComponent />
             </ErrorBoundary>
           </ProtectedRoute>
         }

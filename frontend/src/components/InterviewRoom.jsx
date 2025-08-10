@@ -1,13 +1,14 @@
 // components/InterviewRoom.js
 import React, { useRef, useEffect, useReducer, useState } from "react";
-import { useNavigate } from "react-router-dom"; // For navigation
+import { useNavigate } from "react-router-dom";
 import InterviewerView from "./Interview/InterviewerView";
 import UserVideo from "./Interview/UserVideo";
 import ChatBox from "./Interview/ChatBox";
 import ControlButtons from "./Interview/ControlButtons";
 import Snackbar from "./Interview/Snackbar";
 import ShortcutTooltip from "./Interview/ShortcutTooltip";
-
+import Header from "../priyanka/components/Header";
+import Footer from "../priyanka/components/Footer";
 // Reducer for managing local state
 const interviewReducer = (state, action) => {
   switch (action.type) {
@@ -62,14 +63,10 @@ const InterviewRoom = ({ userResume, interviewQuestions }) => {
   const recognitionRef = useRef(null);
   const isRecognitionRunning = useRef(false);
   const [currentQuestion, setCurrentQuestion] = useState("");
-  const [timer, setTimer] = useState(null); // Active timeout
-  const [timeLeft, setTimeLeft] = useState(60); // Timer for display
+  const [timer, setTimer] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(60);
   const [timerActive, setTimerActive] = useState(false);
-
-  // ✅ NEW: Store full chat history
   const [fullChatHistory, setFullChatHistory] = useState([]);
-
-  // ✅ NEW: Navigation hook
   const navigate = useNavigate();
 
   // Update fullChatHistory whenever messages change
@@ -140,11 +137,11 @@ const InterviewRoom = ({ userResume, interviewQuestions }) => {
     }
   };
 
-  // Ask questions from #11 and exclude last
+  // Ask questions from #11, skip if contains "think"
   useEffect(() => {
     const askQuestionsFrom11 = () => {
       let questions = [...interviewQuestions].slice(0, -1); // Remove last
-      if (questions.length <= 10) {
+      if (questions.length ===0) {
         dispatch({ type: "ADD_MESSAGE", payload: {
           sender: "interviewer",
           content: "No more questions available.",
@@ -152,11 +149,25 @@ const InterviewRoom = ({ userResume, interviewQuestions }) => {
         }});
         return;
       }
-      questions = questions.slice(10); // Start from index 10 (11th)
+      // questions = questions.slice(10); // Start from index 10
 
-      console.log("Asking from question 11 (excluding last):", questions);
+      // ✅ Filter out questions containing "think" (case-insensitive)
+      const filteredQuestions = questions.filter(q =>
+        !q.toLowerCase().includes("think")
+      );
 
-      questions.forEach((question, index) => {
+      console.log("Filtered questions (excluded 'think'):", filteredQuestions);
+
+      if (filteredQuestions.length === 0) {
+        dispatch({ type: "ADD_MESSAGE", payload: {
+          sender: "interviewer",
+          content: "No valid questions available after filtering.",
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        }});
+        return;
+      }
+
+      filteredQuestions.forEach((question, index) => {
         setTimeout(() => {
           const cleanQuestion = question.replace(/^\d+\.\s*/, "").trim();
           const msg = {
@@ -173,13 +184,14 @@ const InterviewRoom = ({ userResume, interviewQuestions }) => {
             startAnswerTimer();
           }, 2000); // Wait for speech to finish
 
-        }, index * 80000); // 80s spacing
+        }, index * 70000); // 80s spacing
       });
     };
 
     const audio = new Audio("/audio/intro2.mp3");
     audio.play().catch(e => console.error("Intro audio error:", e));
     audio.onended = () => setTimeout(askQuestionsFrom11, 4000);
+    console.log("Inteerview room ",interviewQuestions);
   }, [interviewQuestions]);
 
   // Speech Recognition
@@ -376,15 +388,27 @@ const InterviewRoom = ({ userResume, interviewQuestions }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // ✅ NEW: End Interview Handler
-  const endInterview = () => {
-    // Optionally save fullChatHistory to localStorage or backend
-    console.log("Full Chat History:", fullChatHistory);
+  // ✅ End Interview and Pass Chat History
+ // ✅ Corrected endInterview function
+const cleanForSerialization = (data) => {
+  return JSON.parse(JSON.stringify(data, (key, value) => {
+    if (typeof value === "function" || typeof value === "symbol" || value === undefined) {
+      return undefined;
+    }
+    return value;
+  }));
+};
 
-    // Navigate to another component (e.g., /results)
-    navigate("/results"); // Change to your desired route
-  };
+const endInterview = () => {
+  // Remove typing placeholder messages
+  const cleanedChatHistory = fullChatHistory.filter(msg => msg.id !== "typing");
 
+  // Ensure data is serializable before passing via navigate
+  const safeChatHistory = cleanForSerialization(cleanedChatHistory);
+
+  // Navigate to results page with state
+  navigate("/results", { state: { chatHistory: safeChatHistory } });
+};
   // Format time as MM:SS
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
@@ -393,6 +417,8 @@ const InterviewRoom = ({ userResume, interviewQuestions }) => {
   };
 
   return (
+  <div>
+    <Header />
     <div className="w-full h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-gray-800 flex flex-col relative font-sans">
       {/* Top Bar with End Interview Button */}
       <div className="p-4 flex justify-between items-center bg-white/90 backdrop-blur-sm border-b border-gray-200 shadow-sm">
@@ -444,6 +470,8 @@ const InterviewRoom = ({ userResume, interviewQuestions }) => {
 
       <ShortcutTooltip />
       <Snackbar show={snackbar.show} message={snackbar.message} />
+    </div>
+<Footer />
     </div>
   );
 };

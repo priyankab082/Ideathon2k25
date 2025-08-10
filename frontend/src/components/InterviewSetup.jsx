@@ -519,13 +519,16 @@
 import React, { useState } from "react";
 import PreInterviewForm from "./PreInterviewForm";
 import InterviewRoom from "./InterviewRoom";
-
+import Header from "../priyanka/components/Header";
+import Footer from "../priyanka/components/Footer";
 const InterviewSetup = () => {
   const [hasStarted, setHasStarted] = useState(false);
   const [userResume, setUserResume] = useState("");
   const [interviewQuestions, setInterviewQuestions] = useState([]);
 
   const handleStartInterview = (resume, questions) => {
+    console.log("interview setup",resume);
+    console.log("interview setup",questions);
     setUserResume(resume);
     setInterviewQuestions(questions);
     setHasStarted(true);

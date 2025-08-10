@@ -4,11 +4,12 @@ import cv2
 import numpy as np
 import time
 import mediapipe as mp
-from openai import OpenAI
+# from openai import OpenAI
 import os
 from dotenv import load_dotenv
 import traceback
-
+from groq import Groq
+import os
 mp_face_detection = mp.solutions.face_detection
 face_detection = mp_face_detection.FaceDetection(
     model_selection=1,
@@ -83,11 +84,7 @@ def detect_face():
 
 
 load_dotenv()
-client = OpenAI(
-    api_key=os.getenv("GROQ_API_KEY"),
-    base_url="https://api.groq.com/openai/v1"
-)
-
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 @app.route("/api/chat", methods=["POST"])
 def chat():
     try:

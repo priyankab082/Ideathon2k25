@@ -3,7 +3,8 @@ import Lottie from 'lottie-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import loginanimation from '../assets/loginanimation.json';
-
+import Header from "../priyanka/components/Header";
+import Footer from "../priyanka/components/Footer";
 // React Icons
 import { FaUser, FaLock } from 'react-icons/fa';
 
@@ -31,8 +32,8 @@ const response = await axios.post(`${API_URL}/login`, loginData);
       if (response.data.user.referred && Array.isArray(response.data.user.referred)) {
         localStorage.setItem('referred', JSON.stringify(response.data.user.referred));
       }
-navigate('/'); 
-    
+navigate('/');
+
     } catch (error) {
       console.error('Error during login:', error);
       if (error.response) {
@@ -44,6 +45,9 @@ navigate('/');
   };
 
   return (
+    <div>
+      <Header />
+
     <div className="min-h-screen flex bg-gradient-to-br from-blue-50 to-white">
       {/* Left Side - Lottie Animation (Hidden on small screens) */}
       <div className="hidden md:flex w-1/2 items-center justify-center p-12 ">
@@ -72,7 +76,7 @@ navigate('/');
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                 placeholder="Enter your email"
                 required
-              />
+                />
             </div>
 
             {/* Password Input */}
@@ -109,6 +113,8 @@ navigate('/');
         </div>
       </div>
     </div>
+    <Footer />
+              </div>
   );
 };
 

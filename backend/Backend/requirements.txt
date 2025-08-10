@@ -10,9 +10,14 @@ google-generativeai
 openai==0.28.1
 # traceback
 groq
-cv2
-io
-base64
-math
-numpy
-PIL
+# cv2
+# io
+# base64
+# math
+# numpy
+# PIL
+dotenv
+PyPDF2
+googlesearch-python
+beautifulsoup4
+requests

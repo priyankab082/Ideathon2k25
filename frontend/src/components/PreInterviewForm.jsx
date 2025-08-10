@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { IoCloudUploadOutline } from "react-icons/io5";
-
+import Header from "../priyanka/components/Header";
+import Footer from "../priyanka/components/Footer";
 const PreInterviewForm = ({ onStartInterview }) => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -35,6 +36,10 @@ const PreInterviewForm = ({ onStartInterview }) => {
     formData.append("resume_pdf", file); // must match backend key
 
     try {
+      for (let [key, value] of formData.entries()) {
+  console.log(key, value);
+}
+
       const response = await fetch("http://localhost:4000/questions", {
         method: "POST",
         body: formData, // No Content-Type header when using FormData (browser sets it automatically)
@@ -48,6 +53,7 @@ const PreInterviewForm = ({ onStartInterview }) => {
       const data = await response.json();
       if (data.questions && Array.isArray(data.questions)) {
         const resumeText = data.resume_text || "PDF uploaded successfully.";
+        console.log(data.questions);
         onStartInterview(resumeText, data.questions);
       } else {
         throw new Error("Invalid response: missing questions.");
@@ -65,6 +71,8 @@ const PreInterviewForm = ({ onStartInterview }) => {
   };
 
   return (
+    <div>
+<Header />
     <div className="w-full h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
       <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-2xl w-full border border-gray-100">
         <h2 className="text-3xl font-bold text-gray-800 mb-3 text-center">Upload Your Resume</h2>
@@ -135,6 +143,8 @@ const PreInterviewForm = ({ onStartInterview }) => {
         </p>
       </div>
     </div>
+    <Footer />
+              </div>
   );
 };
 

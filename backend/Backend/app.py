@@ -1,18 +1,22 @@
 from groq import Groq
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from PyPDF2 import PdfReader
 import io
 import logging
+import os
+from dotenv import load_dotenv
+from PyPDF2 import PdfReader
 
+# Flask app
 app = Flask(__name__)
-CORS(app)
+CORS(app)  # Enable CORS
+load_dotenv()
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 
 # Initialize Groq client
-client = Groq(api_key="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")
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 # Prompt Templates
 QUESTION_PROMPT_TEMPLATE = """
@@ -34,8 +38,6 @@ Requirements:
 - Do not include any thought process, preface, commentary, or formatting other than the question list
 - Do not use any special characters like asterisks, parentheses, or markdown syntax
 - Output only a clean, numbered list of 10 questions with no additional text
-
-Respond only with the 10 questions.
 """
 
 EVALUATION_TEMPLATE = """
@@ -61,7 +63,6 @@ Question: {question}
 Answer: {answer}
 """
 
-
 def extract_text_from_pdf(pdf_file):
     """Extract text from uploaded PDF file."""
     try:
@@ -75,11 +76,11 @@ def extract_text_from_pdf(pdf_file):
     except Exception as e:
         raise Exception(f"Failed to extract text from PDF: {str(e)}")
 
-
 @app.route('/questions', methods=['POST'])
 def generate_questions():
     try:
-        # 🔹 Check if file is uploaded (multipart/form-data)
+        print(request.files)
+        # Check if file is uploaded
         if 'resume_pdf' in request.files:
             file = request.files['resume_pdf']
             if file.filename == "":
@@ -87,11 +88,9 @@ def generate_questions():
             if not file.filename.lower().endswith('.pdf'):
                 return jsonify({"error": "Only PDF files are allowed"}), 400
 
-            # Read and extract text
             pdf_stream = io.BytesIO(file.read())
             resume_text = extract_text_from_pdf(pdf_stream)
 
-        # 🔹 Or check for plain text in JSON (fallback)
         elif request.is_json:
             data = request.get_json()
             resume_text = data.get("resume", "").strip()
@@ -106,48 +105,37 @@ def generate_questions():
 
         app.logger.info(f"Resume extracted (first 300 chars): {resume_text[:300]}...")
 
-        # 🔹 Generate questions using Groq
+        # Generate questions
         prompt = QUESTION_PROMPT_TEMPLATE.format(resume=resume_text)
-
         response = client.chat.completions.create(
-            model="llama3-70b-8192",  # Reliable and fast on Groq
+            model="llama3-70b-8192",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.5,
             max_tokens=1024,
         )
 
         raw_output = response.choices[0].message.content.strip()
-
-        # 🔹 Parse numbered list into clean questions
         questions = []
         for line in raw_output.splitlines():
             line = line.strip()
             if not line:
                 continue
-            # Remove numbering: "1.", "1)", etc.
             if line[0].isdigit():
-                # Split off number prefix
                 question = line.split('.', 1)[1].strip() if '.' in line else line.split(')', 1)[1].strip()
                 questions.append(question)
             elif len(questions) < 10:
-                # Fallback: accept unnumbered lines up to 10
                 questions.append(line)
 
-        # Ensure exactly 10
         questions = (questions + ["Please tell us more about your experience."] * 10)[:10]
 
         return jsonify({
             "questions": questions,
-            "resume_snippet": resume_text[:200] + "..."  # Optional: for debugging
+            "resume_snippet": resume_text[:200] + "..."
         }), 200
 
     except Exception as e:
         app.logger.error(f"Error in /questions: {str(e)}")
-        return jsonify({
-            "error": "Failed to process PDF or generate questions",
-            "details": str(e)
-        }), 500
-
+        return jsonify({"error": "Failed to process PDF or generate questions", "details": str(e)}), 500
 
 @app.route('/evaluate', methods=['POST'])
 def evaluate_answer():
@@ -160,7 +148,6 @@ def evaluate_answer():
             return jsonify({"error": "Both 'question' and 'answer' are required"}), 400
 
         prompt = EVALUATION_TEMPLATE.format(question=question, answer=answer)
-
         response = client.chat.completions.create(
             model="llama3-70b-8192",
             messages=[{"role": "user", "content": prompt}],
@@ -175,11 +162,9 @@ def evaluate_answer():
         app.logger.error(f"Evaluation error: {str(e)}")
         return jsonify({"error": "Failed to evaluate answer", "details": str(e)}), 500
 
-
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({"status": "ok", "message": "Server is running and ready to accept PDFs!"}), 200
-
 
 if __name__ == "__main__":
     app.run(host="localhost", port=4000, debug=True)

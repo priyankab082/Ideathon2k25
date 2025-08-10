@@ -1,10 +1,22 @@
-// pages/Results.js
-const Results = () => {
+import { useLocation } from "react-router-dom";
+
+export default function Results() {
+  const location = useLocation();
+  const chatHistory = location.state?.chatHistory || [];
+
   return (
-    <div className="p-10 text-center">
-      <h1 className="text-3xl font-bold">Interview Completed!</h1>
-      <p className="text-gray-600 mt-4">Thank you for participating.</p>
+    <div>
+      {chatHistory.length === 0 ? (
+        <p>No chat history available.</p>
+      ) : (
+        chatHistory
+          .filter(msg => msg && msg.sender) // filter out any bad entries
+          .map((msg, index) => (
+            <div key={index}>
+              <strong>{msg.sender}</strong>: {msg.text}
+            </div>
+          ))
+      )}
     </div>
   );
-};
-export default Results;
+}

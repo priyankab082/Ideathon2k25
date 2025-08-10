@@ -13,7 +13,8 @@ import {
   FaSlidersH,
   FaUpload,
 } from "react-icons/fa";
-
+import Header from "../priyanka/components/Header";
+import Footer from "../priyanka/components/Footer";
 const Profile = () => {
   const [form, setForm] = useState({
     firstName: "",
@@ -125,6 +126,8 @@ const Profile = () => {
   };
 
   return (
+    <div>
+  <Header />
     <div className="max-w-4xl mx-auto p-6 bg-gray-50 min-h-screen">
       {/* Personal Information */}
       <div className="bg-white shadow-lg rounded-xl p-8 mb-8 border border-gray-100">
@@ -528,6 +531,8 @@ const Profile = () => {
         </button>
       </div>
     </div>
+    <Footer />
+              </div>
   );
 };
 
