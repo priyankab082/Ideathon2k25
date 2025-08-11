@@ -17,8 +17,21 @@ face_detection = mp_face_detection.FaceDetection(
 )
 
 app = Flask(__name__)
-CORS(app)
-
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:5173"],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True,
+    }
+})
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5173')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
 
 @app.route('/detect-face', methods=['POST'])
 def detect_face():
@@ -115,6 +128,129 @@ def chat():
         print("Error:", str(e))
         traceback.print_exc()
         return jsonify({"error": "Sorry, AI service is unavailable."}), 500
+@app.route("/api/score", methods=["POST"])
+def get_score():
+    try:
+        data = request.get_json()
+        chat_history = data.get("chatHistory", [])
 
+        if not chat_history:
+            return jsonify({"error": "No chat history provided"}), 400
+
+        # Convert chat history to readable format
+        conversation = "\n".join([
+            f"{msg['sender'].capitalize()}: {msg['content']}"
+            for msg in chat_history if msg.get("content") and msg.get("sender")
+        ])
+
+        prompt = f"""
+        You are an expert technical interviewer. Based on the following interview transcript,
+        evaluate the candidate's overall performance and give a score from 1 to 10.
+
+        Consider:
+        - Clarity and completeness of answers
+        - Technical accuracy
+        - Communication skills
+        - Depth of understanding
+
+        Respond ONLY with a JSON object in this format:
+        {{
+          "score": 7.5,
+          "summary": "The candidate showed good understanding of core concepts but lacked depth in advanced topics."
+        }}
+
+        Interview Transcript:
+        {conversation}
+        """
+
+        response = client.chat.completions.create(
+            model="llama3-70b-8192",
+            messages=[
+                {"role": "system", "content": "You are an expert interviewer. Respond only in valid JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.3,
+            max_tokens=200
+        )
+
+        # Parse LLM response
+        raw_response = response.choices[0].message.content.strip()
+
+        # Clean up response if it starts with ```json
+        if raw_response.startswith("```json"):
+            raw_response = raw_response[7:].split("```")[0].strip()
+
+        result = eval(raw_response)  # Use json.loads if safe; eval is risky in prod
+
+        return jsonify({
+            "score": float(result["score"]),
+            "summary": result["summary"],
+            "timestamp": response.created
+        })
+
+    except Exception as e:
+        print("Scoring error:", str(e))
+        traceback.print_exc()
+        return jsonify({
+            "score": 5.0,
+            "summary": "Could not generate score. Default provided."
+        }), 200  # Return safe default
+
+
+@app.route("/api/feedback", methods=["POST"])
+def get_feedback():
+    try:
+        data = request.get_json()
+        chat_history = data.get("chatHistory", [])
+
+        if not chat_history:
+            return jsonify({"error": "No chat history provided"}), 400
+
+        conversation = "\n".join([
+            f"{msg['sender'].capitalize()}: {msg['content']}"
+            for msg in chat_history if msg.get("content") and msg.get("sender")
+        ])
+
+        prompt = f"""
+        You are a career coach reviewing a technical interview.
+        Based on the transcript below, provide structured feedback.
+
+        Respond in JSON format:
+        {{
+          "strengths": ["Clear communication", "Good fundamentals"],
+          "improvement_areas": ["Database indexing", "System design patterns"],
+          "recommendations": "Study more on distributed systems and practice whiteboarding."
+        }}
+
+        Transcript:
+        {conversation}
+        """
+
+        response = client.chat.completions.create(
+            model="llama3-70b-8192",
+            messages=[
+                {"role": "system", "content": "You are a helpful career coach. Respond only in valid JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.4,
+            max_tokens=300
+        )
+
+        raw_response = response.choices[0].message.content.strip()
+        if raw_response.startswith("```json"):
+            raw_response = raw_response[7:].split("```")[0].strip()
+
+        result = eval(raw_response)
+
+        return jsonify(result)
+
+    except Exception as e:
+        print("Feedback error:", str(e))
+        traceback.print_exc()
+        return jsonify({
+            "strengths": ["Participated fully", "Tried to answer"],
+            "improvement_areas": ["General knowledge", "Confidence"],
+            "recommendations": "Review core CS topics and practice mock interviews."
+        }), 200
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=3000)

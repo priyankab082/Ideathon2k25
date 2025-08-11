@@ -28,6 +28,11 @@ const interviewReducer = (state, action) => {
       return { ...state, snackbar: { show: true, message: action.payload } };
     case "HIDE_SNACKBAR":
       return { ...state, snackbar: { show: false, message: "" } };
+    case "REMOVE_MESSAGE_BY_ID":
+      return {
+        ...state,
+        messages: state.messages.filter((msg) => msg.id !== action.payload),
+      };
     default:
       return state;
   }
@@ -73,7 +78,8 @@ const InterviewRoom = ({ userResume, interviewQuestions }) => {
   useEffect(() => {
     setFullChatHistory([...messages]);
   }, [messages]);
-
+const speakingIntervalRef = useRef(null);
+const introAudioRef = useRef(null);
   // Text-to-Speech
   const speakText = (text) => {
     window.speechSynthesis.cancel();
@@ -138,61 +144,53 @@ const InterviewRoom = ({ userResume, interviewQuestions }) => {
   };
 
   // Ask questions from #11, skip if contains "think"
-  useEffect(() => {
-    const askQuestionsFrom11 = () => {
-      let questions = [...interviewQuestions].slice(0, -1); // Remove last
-      if (questions.length ===0) {
-        dispatch({ type: "ADD_MESSAGE", payload: {
+  const timeoutsRef = useRef([]);
+
+useEffect(() => {
+  const askQuestionsFrom11 = () => {
+    let questions = [...interviewQuestions].slice(0, -1);
+    const filteredQuestions = questions.filter(q => !q.toLowerCase().includes("think"));
+
+    if (filteredQuestions.length === 0) {
+      dispatch({ type: "ADD_MESSAGE", payload: {
+        sender: "interviewer",
+        content: "No valid questions available after filtering.",
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      }});
+      return;
+    }
+
+    filteredQuestions.forEach((question, index) => {
+      const timeout = setTimeout(() => {
+        const cleanQuestion = question.replace(/^\d+\.\s*/, "").trim();
+        const msg = {
           sender: "interviewer",
-          content: "No more questions available.",
+          content: cleanQuestion,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        }});
-        return;
-      }
-      // questions = questions.slice(10); // Start from index 10
+          id: `question-${index}`,
+        };
+        dispatch({ type: "ADD_MESSAGE", payload: msg });
+        setCurrentQuestion(cleanQuestion);
+        speakText(cleanQuestion);
 
-      // ✅ Filter out questions containing "think" (case-insensitive)
-      const filteredQuestions = questions.filter(q =>
-        !q.toLowerCase().includes("think")
-      );
-
-      console.log("Filtered questions (excluded 'think'):", filteredQuestions);
-
-      if (filteredQuestions.length === 0) {
-        dispatch({ type: "ADD_MESSAGE", payload: {
-          sender: "interviewer",
-          content: "No valid questions available after filtering.",
-          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        }});
-        return;
-      }
-
-      filteredQuestions.forEach((question, index) => {
         setTimeout(() => {
-          const cleanQuestion = question.replace(/^\d+\.\s*/, "").trim();
-          const msg = {
-            sender: "interviewer",
-            content: cleanQuestion,
-            timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-            id: `question-${index}`,
-          };
-          dispatch({ type: "ADD_MESSAGE", payload: msg });
-          setCurrentQuestion(cleanQuestion);
-          speakText(cleanQuestion);
+          startAnswerTimer();
+        }, 2000);
+      }, index * 70000);
 
-          setTimeout(() => {
-            startAnswerTimer();
-          }, 2000); // Wait for speech to finish
+      timeoutsRef.current.push(timeout);
+    });
+  };
 
-        }, index * 70000); // 80s spacing
-      });
-    };
+  const audio = new Audio("/audio/intro2.mp3");
+  introAudioRef.current = audio; // Save reference
+  audio.play().catch(e => console.error("Intro audio error:", e));
+  audio.onended = () => setTimeout(askQuestionsFrom11, 4000);
 
-    const audio = new Audio("/audio/intro2.mp3");
-    audio.play().catch(e => console.error("Intro audio error:", e));
-    audio.onended = () => setTimeout(askQuestionsFrom11, 4000);
-    console.log("Inteerview room ",interviewQuestions);
-  }, [interviewQuestions]);
+  return () => {
+    if (audio.onended) audio.onended = null;
+  };
+}, [interviewQuestions]);
 
   // Speech Recognition
   useEffect(() => {
@@ -254,102 +252,111 @@ const InterviewRoom = ({ userResume, interviewQuestions }) => {
   }, []);
 
   // Media setup
-  useEffect(() => {
-    const getMedia = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        dispatch({ type: "SET_MEDIA_STREAM", payload: stream });
-        mediaStreamRef.current = stream;
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.play().catch(e => console.error("Video play error:", e));
-        }
-
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const analyser = audioCtx.createAnalyser();
-        const source = audioCtx.createMediaStreamSource(stream);
-        source.connect(analyser);
-        analyser.fftSize = 128;
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-        audioContextRef.current = audioCtx;
-        dataArrayRef.current = dataArray;
-
-        const visualize = () => {
-          analyser.getByteFrequencyData(dataArrayRef.current);
-          const volume = dataArrayRef.current.reduce((a, b) => a + b) / bufferLength;
-          dispatch({ type: "SET_USER_SPEAKING", payload: volume > 50 });
-          requestAnimationFrame(visualize);
-        };
-        visualize();
-
-        const speakingInterval = setInterval(() => {
-          dispatch({ type: "SET_INTERVIEWER_SPEAKING", payload: prev => !prev });
-        }, 3000);
-
-        return () => {
-          clearInterval(speakingInterval);
-          if (mediaStreamRef.current) {
-            mediaStreamRef.current.getTracks().forEach(t => t.stop());
-          }
-          if (audioContextRef.current) {
-            audioContextRef.current.close();
-          }
-        };
-      } catch (err) {
-        console.error("Media error:", err);
-        alert("Please allow camera and microphone access.");
-      }
-    };
-
-    getMedia();
-  }, []);
-
-  const handleSendMessage = async () => {
-    const answerText = inputValue.trim();
-    if (!answerText) return;
-
-    const userMsg = {
-      sender: "customer",
-      content: answerText,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
-    dispatch({ type: "ADD_MESSAGE", payload: userMsg });
-    dispatch({ type: "SET_INPUT_VALUE", payload: "" });
-
-    cancelAnswerTimer();
-
-    dispatch({ type: "ADD_MESSAGE", payload: {
-      sender: "interviewer",
-      content: "Evaluating...",
-      id: "typing",
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    } });
-
+ useEffect(() => {
+  const getMedia = async () => {
     try {
-      const res = await fetch("http://localhost:4000/evaluate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: currentQuestion, answer: answerText }),
-      });
-      const data = await res.json();
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      dispatch({ type: "SET_MEDIA_STREAM", payload: stream });
+      mediaStreamRef.current = stream;
 
-      dispatch({ type: "ADD_MESSAGE", payload: {
-        sender: "interviewer",
-        content: data.evaluation || "Thank you for your response.",
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      }});
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play().catch(e => console.error("Video play error:", e));
+      }
+
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const analyser = audioCtx.createAnalyser();
+      const source = audioCtx.createMediaStreamSource(stream);
+      source.connect(analyser);
+      analyser.fftSize = 128;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      audioContextRef.current = audioCtx;
+      dataArrayRef.current = dataArray;
+
+      const visualize = () => {
+        analyser.getByteFrequencyData(dataArrayRef.current);
+        const volume = dataArrayRef.current.reduce((a, b) => a + b) / bufferLength;
+        dispatch({ type: "SET_USER_SPEAKING", payload: volume > 50 });
+        requestAnimationFrame(visualize);
+      };
+      visualize();
+
+      // Save interval ref so we can clear it later
+      speakingIntervalRef.current = setInterval(() => {
+        dispatch({ type: "SET_INTERVIEWER_SPEAKING", payload: prev => !prev });
+      }, 3000);
+
+      return () => {
+        if (speakingIntervalRef.current) clearInterval(speakingIntervalRef.current);
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getTracks().forEach(t => t.stop());
+        }
+        if (audioContextRef.current) {
+          audioContextRef.current.close();
+        }
+      };
     } catch (err) {
-      console.error("Evaluation error:", err);
-      dispatch({ type: "ADD_MESSAGE", payload: {
-        sender: "interviewer",
-        content: "Response received. Evaluation pending.",
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      }});
-    } finally {
-      dispatch({ type: "ADD_MESSAGE", payload: (prev) => prev.filter(m => m.id !== "typing") });
+      console.error("Media error:", err);
+      alert("Please allow camera and microphone access.");
     }
   };
+
+  getMedia();
+}, []);
+
+const handleSendMessage = async () => {
+  const answerText = inputValue.trim();
+  if (!answerText) return;
+
+  // 1. Add user's answer
+  const userMsg = {
+    sender: "customer",
+    content: answerText,
+    timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+  };
+  dispatch({ type: "ADD_MESSAGE", payload: userMsg });
+  dispatch({ type: "SET_INPUT_VALUE", payload: "" });
+
+  // 2. Cancel active answer timer
+  cancelAnswerTimer();
+
+  // 3. Show "Evaluating..." placeholder
+  dispatch({ type: "ADD_MESSAGE", payload: {
+    sender: "interviewer",
+    content: "Evaluating...",
+    id: "typing",
+    timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+  } });
+
+  try {
+    // 4. Call backend for evaluation
+    const res = await fetch("http://localhost:4000/evaluate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question: currentQuestion, answer: answerText }),
+    });
+
+    const data = await res.json();
+
+    // 5. Add evaluation response
+    dispatch({ type: "ADD_MESSAGE", payload: {
+      sender: "interviewer",
+      content: data.evaluation || "Thank you for your response.",
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    }});
+  } catch (err) {
+    console.error("Evaluation error:", err);
+    dispatch({ type: "ADD_MESSAGE", payload: {
+      sender: "interviewer",
+      content: "Response received. Evaluation pending.",
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    }});
+  } finally {
+    // ✅ Correct: Remove the typing indicator by ID
+    dispatch({ type: "REMOVE_MESSAGE_BY_ID", payload: "typing" });
+  }
+};
 
   const toggleMic = () => {
     if (!mediaStream) return;
@@ -400,13 +407,43 @@ const cleanForSerialization = (data) => {
 };
 
 const endInterview = () => {
-  // Remove typing placeholder messages
-  const cleanedChatHistory = fullChatHistory.filter(msg => msg.id !== "typing");
+  // 1. Stop all speech
+  window.speechSynthesis.cancel();
 
-  // Ensure data is serializable before passing via navigate
+  // 2. Stop mic/cam
+  if (mediaStreamRef.current) {
+    mediaStreamRef.current.getTracks().forEach(track => track.stop());
+    dispatch({ type: "SET_MEDIA_STREAM", payload: null });
+  }
+
+  // 3. Stop speech recognition
+  if (recognitionRef.current && isRecognitionRunning.current) {
+    recognitionRef.current.stop();
+    isRecognitionRunning.current = false;
+  }
+
+  // 4. Stop intro audio
+  if (introAudioRef.current) {
+    introAudioRef.current.pause();
+    introAudioRef.current = null;
+  }
+
+  // 5. Clear timers
+  if (timer) clearTimeout(timer);
+  if (speakingIntervalRef.current) clearInterval(speakingIntervalRef.current);
+  timeoutsRef.current.forEach(clearTimeout);
+  timeoutsRef.current = [];
+
+  // 6. Close audio context
+  if (audioContextRef.current && audioContextRef.current.state !== "closed") {
+    audioContextRef.current.close();
+  }
+
+  // 7. Clean chat history
+  const cleanedChatHistory = fullChatHistory.filter(msg => msg.id !== "typing");
   const safeChatHistory = cleanForSerialization(cleanedChatHistory);
 
-  // Navigate to results page with state
+  // 8. Navigate
   navigate("/results", { state: { chatHistory: safeChatHistory } });
 };
   // Format time as MM:SS
